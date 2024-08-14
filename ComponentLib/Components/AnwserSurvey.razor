@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+
+
+@if (!complete)
+{
+    <EditForm OnSubmit="Owner" Model="Survey">
+        <InputText placeholder="Indtast Ejer Kode" @bind-Value="Code" />
+        <input hidden type="submit" />
+    </EditForm>
+
+
+    <EditForm OnValidSubmit="AnwserSurve" Model="Survey">
+        <div class="survey">
+            <h2>@Survey.Name</h2>
+            @if (Survey.SComps != null)
+            {
+                @foreach (var item in Survey.SComps)
+                {
+                    <h4>@item.Question</h4>
+
+                    @if (item.Type == 0)
+                    {
+                        <InputTextArea @bind-Value="item.TextAnwser" />
+                    }
+                    @if (item.Type == 1)
+                    {
+                        <p>Du kan vælge flere svarmuligheder</p>
+                        @foreach (var x in item.MultiAnwsers)
+                        {
+                            <div class="option">
+                                <InputCheckbox class="form-check-input rdo" type="radio" @bind-Value="x.Selected" />
+                                <p>@x.Text</p>
+                            </div>
+                        }
+                    }
+                    @if (item.Type == 2)
+                    {
+                        <p>Du kan kun vælge <b>ET</b> svar</p>
+                        @foreach (var x in item.SingleAnwser)
+                        {
+                            <div class="option">
+                                <InputCheckbox @onclick="(() => SingleAwnser(item,x))" class="form-check-input rdo" type="radio" @bind-Value="x.Selected" />
+                                <p>@x.Text</p>
+                            </div>
+                        }
+
+                    }
+
+
+                }
+            }
+
+
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </EditForm>
+}
+else
+{
+    <h1>Færdig</h1>
+    <p>Tak fordi du deltog i vores spørgeskema</p>
+}

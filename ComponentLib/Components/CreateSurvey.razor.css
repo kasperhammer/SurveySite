@@ -1,0 +1,55 @@
+﻿ .survey {
+    display: flex;
+    flex-direction: column;
+    height:100%;
+    padding:5%;
+}
+
+.comp {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 50% 50%;
+    margin-top: 5%;
+}
+
+::deep .question {
+    width: 50vw;
+}
+
+::deep .compbottom {
+    grid-column: span 2;
+    pointer-events: none;
+   
+}
+
+.option {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: row;
+}
+
+.rdo {
+    pointer-events: none;
+}
+.input-group-text {
+    height: 100%;
+}
+
+.add {
+    pointer-events: none;
+}
+
+.Remove{
+    color:red;
+}
+
+.modal{
+    display:block;
+}
+
+.abs {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000000a8;
+}

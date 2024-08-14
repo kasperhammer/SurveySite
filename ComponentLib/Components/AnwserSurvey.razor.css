@@ -1,0 +1,11 @@
+﻿body {
+}
+.survey {
+    display: flex;
+    flex-direction: column;
+}
+.option {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: row;
+}

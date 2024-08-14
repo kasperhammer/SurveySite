@@ -1,218 +1,58 @@
 ﻿@page "/"
 @page "/{SurveyId:int}"
+@using ComponentLib.Components
 @using Models
 
 <PageTitle>Surveys</PageTitle>
 <div class="page">
-    <h1>Surveys</h1>
 
-    <p>Click Here to Create your own Survey !</p>
-    <button @onclick="(() => ShowSurvey = !ShowSurvey)" class="btn btn-primary">Click me to start !</button>
-    <p>@ShowSurvey</p>
-    @if (ShowSurvey)
+
+    @if (!showSurvey)
     {
+        <div class="idea">
 
+            <h1>Surveys</h1>
+            <p>Click Here to Create your own Survey !</p>
+            <button @onclick="Start" class="btn btn-primary">Click me to start !</button>
+        </div>
+
+
+
+
+    }
+    else
+    {
         @if (Edit)
         {
-            <div class="anwsers">
-                <button @onclick="(() => PageCount--)" class="btn btn-outline-primary"><i class="fa-solid fa-chevron-left"></i></button>
-                <h3>@PageCount / @Anwsers.Count</h3>
-                <button @onclick="(() => PageCount++)" class="btn btn-outline-primary"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-
-            @if(PageCount == 0)
+            @if (isOwner)
             {
-                <EditForm Model="Survey" OnValidSubmit="Submit">
-                    <div class="survey">
-                        <InputText placeholder="Insæt Survey navn" class="Name" @bind-Value="Survey.Name" />
-                        <InputText placeholder="Insæt Ejerkode" class="Name" @bind-Value="Survey.OwnerCode" />
-                        @if (Survey.SComps != null)
-                        {
-                            @foreach (var item in Survey.SComps)
-                            {
-                                <div class="comp">
-                                    <InputText class="question" placeholder="Spørgsmål" @bind-Value="item.Question" />
-                                    <InputSelect @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
-                                        <option value="0">Fri Tekst</option>
-                                        <option value="1">Flere Svarmuligheder</option>
-                                        <option value="2">Et Svar</option>
-                                    </InputSelect>
-                                    @*           //Free Text *@
-                                    @if (item.Type == 0)
-                                    {
-                                        <p class="compbottom">Dit svar</p>
-                                    }
-
-                                    @*     //Multiple Choice *@
-
-
-
-                                    @if (item.Type == 1)
-                                    {
-                                        <p>Denne kategori lader brugeren vælge flere forskellige svar</p>
-
-                                        @if (item.MultiAnwsers != null)
-                                        {
-                                            @foreach (var x in item.MultiAnwsers)
-                                            {
-                                                <div class="option">
-                                                    <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                                                    <InputText @bind-Value="x.Text" />
-                                                </div>
-                                            }
-
-                                            <div @onclick="(() => AddQuestions(item.Id))" class="option">
-                                                <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                                                <p>Tilføj mulighed</p>
-                                            </div>
-
-                                        }
-
-                                    }
-
-
-                                    @*    //Single choise *@
-                                    @if (item.Type == 2)
-                                    {
-
-                                        <p>Denne kategori lader kun brugeren vælge <b>et</b> svar</p>
-
-                                        @if (item.SingleAnwser != null)
-                                        {
-                                            @foreach (var x in item.SingleAnwser)
-                                            {
-                                                <div class="option">
-                                                    <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                                                    <InputText @bind-Value="x.Text" />
-                                                </div>
-                                            }
-
-                                            <div @onclick="(() => AddQuestions(item.Id))" class="option">
-                                                <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                                                <p>Tilføj mulighed</p>
-                                            </div>
-
-                                        }
-                                    }
-
-
-
-
-                                </div>
-                            }
-                        }
-
-                        <button @onclick="AddComp" type="button"><i class="fa-solid fa-plus"></i></button>
-                        <button type="submit" class="btn btn-success">Submit</button>
-                    </div>
-                </EditForm>
-            }
-            else
-            {
-                <div class="survey">
-                    <h2>@Anwsers[PageCount-1].Name</h2>
-
-                    @foreach (var item in Anwsers[PageCount - 1].SComps)
-                        {
-                            <h4>@item.Question</h4>
-
-                            @if (item.Type == 0)
-                            {
-                                
-                                <textarea disabled>@item.TextAnwser</textarea>
-                            }
-                            @if (item.Type == 1)
-                            {
-                                <p>Du kan vælge flere svarmuligheder</p>
-                                @foreach (var x in item.MultiAnwsers)
-                                {
-                                    <div class="option">
-                                        <InputCheckbox disabled class="form-check-input rdo" type="radio" @bind-Value="x.Selected" />
-                                   
-                                        <p>@x.Text</p>
-                                    </div>
-                                }
-                            }
-                            @if (item.Type == 2)
-                            {
-                                <p>Du kan kun vælge <b>ET</b> svar</p>
-                                @foreach (var x in item.SingleAnwser)
-                                {
-                                    <div class="option">
-                                    <InputCheckbox disabled @onclick="(() => SingleAwnser(item,x))" class="form-check-input rdo" type="radio" @bind-Value="x.Selected" />
-                                        <p>@x.Text</p>
-                                    </div>
-                                }
-
-                            }
-
-
-                        }
-                    
-
-
-                   
+                <div class="anwsers">
+                    <button class="btn btn-outline-primary" @onclick="(() => pageCount--)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div>  <p style="align-self:center">@pageCount / @totalPages</p></div>
+                  
+                    <button class="btn btn-outline-primary" @onclick="(() => pageCount++)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
+
+
+                <ViewSurvey SurveyId="SurveyId" PageCount="pageCount" PageUpdate="PageCount" />
+            }
+            @if (pageCount == 0)
+            {
+                <CreateSurvey Survey="Survey" />
             }
 
-           
+
+
+
+
+
         }
         else
         {
-            <EditForm OnSubmit="Owner" Model="Survey" >
-                <InputText placeholder="Indtast Ejer Kode" @bind-Value="Code" />
-                <input hidden type="submit" />
-            </EditForm>
-         
-
-            <EditForm OnValidSubmit="AnwserSurvey" Model="Survey">
-                <div class="survey">
-                    <h2>@Survey.Name</h2>
-                    @if(Survey.SComps != null)
-                    {
-                        @foreach (var item in Survey.SComps)
-                        {
-                            <h4>@item.Question</h4>
-
-                            @if (item.Type == 0)
-                            {
-                                <InputTextArea @bind-Value="item.TextAnwser" />
-                            }
-                            @if (item.Type == 1)
-                            {
-                                      <p>Du kan vælge flere svarmuligheder</p>
-                                @foreach (var x in item.MultiAnwsers)
-                                {
-                                    <div class="option">
-                                        <InputCheckbox class="form-check-input rdo" type="radio" @bind-Value="x.Selected" />
-                                        <p>@x.Text</p>
-                                    </div>
-                                }
-                            }
-                            @if (item.Type == 2)
-                            {
-                                <p>Du kan kun vælge <b>ET</b> svar</p>
-                                @foreach (var x in item.SingleAnwser)
-                                {
-                                    <div class="option">
-                                        <InputCheckbox @onclick="(() => SingleAwnser(item,x))" class="form-check-input rdo" type="radio" @bind-Value="x.Selected" />
-                                        <p>@x.Text</p>
-                                    </div>
-                                }
-
-                            }
 
 
-                        }
-                    }
-                   
-
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </div>
-            </EditForm>
+            <AnwserSurvey Survey="Survey" IsOwner="Owner" />
         }
-
-
     }
 
 </div>
