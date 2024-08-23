@@ -1,131 +1,134 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
-<EditForm Model="Survey" OnValidSubmit="Submit">
-    <div class="survey">
 
-        <div class="form-group">
-            <label for="exampleFormControlInput1">Spørgeskema navn</label>
-            <InputText placeholder="testskema" class="form-control Name" @bind-Value="Survey.Name" />
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlInput1">Ejerkode</label>
-            <InputText type="password" placeholder="1234" class="form-control Name" @bind-Value="Survey.OwnerCode" />
-        </div>
+    <EditForm Model="Survey" OnValidSubmit="Submit">
+        <div class="survey">
 
-        @if (Survey.SComps != null)
-        {
-            @foreach (var item in Survey.SComps)
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Spørgeskema navn</label>
+                <InputText placeholder="testskema" class="form-control Name" @bind-Value="Survey.Name" />
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Ejerkode</label>
+                <InputText type="password" placeholder="1234" class="form-control Name" @bind-Value="Survey.OwnerCode" />
+            </div>
+
+            @if (Survey.SComps != null)
             {
-                <div class="comp">
-                    <InputText class="question form-control" placeholder="Spørgsmål" @bind-Value="item.Question" />
-                    <InputSelect class="form-select" @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
-                        <option value="0">Fri Tekst</option>
-                        <option value="1">Flere Svarmuligheder</option>
-                        <option value="2">Et Svar</option>
-                        <option class="Remove" value="3">Fjern Modul</option>
-                    </InputSelect>
-                    @*           //Free Text *@
-                    @if (item.Type == 0)
-                    {
-                        <p class="compbottom form-control">Dit svar</p>
-                    }
-
-                    @*     //Multiple Choice *@
-
-
-
-                    @if (item.Type == 1)
-                    {
-                        <p>Denne kategori lader brugeren vælge flere forskellige svar</p>
-
-                        @if (item.MultiAnwsers != null)
+                @foreach (var item in Survey.SComps)
+                {
+                    <div class="comp">
+                        <InputText class="question form-control" placeholder="Spørgsmål" @bind-Value="item.Question" />
+                        <InputSelect class="form-select" @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
+                            <option value="0">Fri Tekst</option>
+                            <option value="1">Flere Svarmuligheder</option>
+                            <option value="2">Et Svar</option>
+                            <option class="Remove" value="3">Fjern Modul</option>
+                        </InputSelect>
+                        @*           //Free Text *@
+                        @if (item.Type == 0)
                         {
-                            @foreach (var x in item.MultiAnwsers)
+                            <p class="compbottom form-control">Dit svar</p>
+                        }
+
+                        @*     //Multiple Choice *@
+
+
+
+                        @if (item.Type == 1)
+                        {
+                            <p>Denne kategori lader brugeren vælge flere forskellige svar</p>
+
+                            @if (item.MultiAnwsers != null)
                             {
-                                <div class="option">
+                                @foreach (var x in item.MultiAnwsers)
+                                {
+                                    <div class="option">
+                                        <div class="col-auto">
+                                            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                                </div>
+                                                <InputText class="form-control" @bind-Value="x.Text" />
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                }
+
+                                <div @onclick="(() => AddQuestions(item.Id))" class="option">
                                     <div class="col-auto">
                                         <label class="sr-only" for="inlineFormInputGroup">Username</label>
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                             </div>
-                                            <InputText class="form-control" @bind-Value="x.Text" />
+                                            <input class="form-control add" placeholder="Tilføj mulighed" />
                                         </div>
                                     </div>
-                                 
-                              
+
                                 </div>
+
                             }
-
-                            <div @onclick="(() => AddQuestions(item.Id))" class="option">
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Username</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
-                                        </div>
-                                        <input class="form-control add" placeholder="Tilføj mulighed"/>
-                                    </div>
-                                </div>
-
-                            </div>
 
                         }
 
-                    }
 
-
-                    @*    //Single choise *@
-                    @if (item.Type == 2)
-                    {
-
-                        <p>Denne kategori lader kun brugeren vælge <b>et</b> svar</p>
-
-                        @if (item.SingleAnwser != null)
+                        @*    //Single choise *@
+                        @if (item.Type == 2)
                         {
-                            @foreach (var x in item.SingleAnwser)
+
+                            <p>Denne kategori lader kun brugeren vælge <b>et</b> svar</p>
+
+                            @if (item.SingleAnwser != null)
                             {
-                                <div class="option">
+                                @foreach (var x in item.SingleAnwser)
+                                {
+                                    <div class="option">
+                                        <div class="col-auto">
+                                            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                                </div>
+                                                <InputText class="form-control" @bind-Value="x.Text" />
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                }
+
+                                <div @onclick="(() => AddQuestions(item.Id))" class="option">
                                     <div class="col-auto">
                                         <label class="sr-only" for="inlineFormInputGroup">Username</label>
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                             </div>
-                                            <InputText class="form-control" @bind-Value="x.Text" />
+                                            <input class="form-control add" placeholder="Tilføj mulighed" />
                                         </div>
                                     </div>
 
-
                                 </div>
+
                             }
-
-                            <div @onclick="(() => AddQuestions(item.Id))" class="option">
-                                <div class="col-auto">
-                                    <label class="sr-only" for="inlineFormInputGroup">Username</label>
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
-                                        </div>
-                                        <input class="form-control add" placeholder="Tilføj mulighed" />
-                                    </div>
-                                </div>
-
-                            </div>
-
                         }
-                    }
 
 
 
 
-                </div>
+                    </div>
+                }
             }
-        }
 
-        <button @onclick="AddComp" class="btn btn-outline-primary" type="button"><i class="fa-solid fa-plus"></i></button>
-        <button type="submit" class="btn btn-success">Submit</button>
-    </div>
-</EditForm>
+            <button @onclick="AddComp" class="btn btn-outline-primary addSegment" type="button"><i class="fa-solid fa-plus "></i></button>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </EditForm>
+
+
 
 @if (complete)
 {

@@ -16,7 +16,7 @@
     align-items: center;
     justify-content: center;
     overflow: auto;
-    height:100vh;
+    height:80vh;
 }
 .anwsers{
 
@@ -31,3 +31,19 @@
 
 }
 
+.Header {
+    height: 10vh;
+    width: 100vw;
+    background-color: #157347;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.SurveyText{
+    font-family:'Poppins';
+    color:white;
+}
+
+.bottom{
+
+}

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Database.csproj", "{97F78666-1CF1-45D2-B588-F5C3AC518E2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComponentLib", "ComponentLib\ComponentLib.csproj", "{843CDC95-73E1-45CD-A080-03478242E42C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComponentLib", "ComponentLib\ComponentLib.csproj", "{843CDC95-73E1-45CD-A080-03478242E42C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

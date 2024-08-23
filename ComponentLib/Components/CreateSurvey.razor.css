@@ -1,15 +1,17 @@
-﻿ .survey {
+﻿.survey {
     display: flex;
     flex-direction: column;
-    height:100%;
-    padding:5%;
+    justify-content: safe center;
+    min-height: 80vh; /* Ensures the height is at least 80vh */
+    height: auto;
+    padding: 5%;
 }
 
 .comp {
     display: grid;
     grid-template-rows: auto auto;
     grid-template-columns: 50% 50%;
-    margin-top: 5%;
+  
 }
 
 ::deep .question {
@@ -49,7 +51,12 @@
 
 .abs {
     position: absolute;
-    height: 100vh;
+    height: 500vh;
     width: 100vw;
     background-color: #000000a8;
+}
+
+.addSegment{
+    margin-top:5%;
+    margin-bottom:5%;
 }
