@@ -4,7 +4,8 @@
    display:flex;
    flex-direction:column;
    align-items:center;
-  
+   background-image:url('../Images/Frame1.svg');
+   background-size:cover;
    justify-content:center;
    overflow:auto;
 }
@@ -34,10 +35,10 @@
 .Header {
     height: 10vh;
     width: 100vw;
-    background-color: #157347;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    background-color: #10c16e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .SurveyText{
     font-family:'Poppins';
@@ -46,4 +47,14 @@
 
 .bottom{
 
+}
+
+.btn-success {
+    background-color: #10c16e !important;
+}
+
+@media only screen and (max-width: 768px) {
+  .page{
+      background-size:0px;
+  }
 }

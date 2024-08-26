@@ -1,23 +1,27 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 
-    <EditForm Model="Survey" OnValidSubmit="Submit">
+    <EditForm Model="Survey" OnValidSubmit="Submit" OnInvalidSubmit="Invalid">
         <div class="survey">
-
+            <DataAnnotationsValidator />
             <div class="form-group">
                 <label for="exampleFormControlInput1">Spørgeskema navn</label>
                 <InputText placeholder="testskema" class="form-control Name" @bind-Value="Survey.Name" />
+                <ValidationMessage For="() => Survey.Name" />
             </div>
             <div class="form-group">
                 <label for="exampleFormControlInput1">Ejerkode</label>
                 <InputText type="password" placeholder="1234" class="form-control Name" @bind-Value="Survey.OwnerCode" />
+                <ValidationMessage For="() => Survey.OwnerCode" />
             </div>
 
-            @if (Survey.SComps != null)
+            @if (Survey.Comps != null)
             {
-                @foreach (var item in Survey.SComps)
+                @foreach (var item in Survey.Comps)
                 {
                     <div class="comp">
+                       
                         <InputText class="question form-control" placeholder="Spørgsmål" @bind-Value="item.Question" />
+                     
                         <InputSelect class="form-select" @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
                             <option value="0">Fri Tekst</option>
                             <option value="1">Flere Svarmuligheder</option>
@@ -115,16 +119,30 @@
 
                             }
                         }
+                      
+                        
 
 
 
 
                     </div>
+          
                 }
             }
 
+        @if (invalid)
+        {
+            <button @onclick="AddComp" style="border-color:red;color:red;" class="btn btn-outline-primary addSegment" type="button"><i class="fa-solid fa-plus "></i></button>
+            <ValidationMessage For="() => Survey.Comps" />
+        }
+        else
+        {
             <button @onclick="AddComp" class="btn btn-outline-primary addSegment" type="button"><i class="fa-solid fa-plus "></i></button>
+        }
+            
+          
             <button type="submit" class="btn btn-success">Submit</button>
+            <ValidationSummary />
         </div>
     </EditForm>
 

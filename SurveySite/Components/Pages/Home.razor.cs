@@ -3,6 +3,7 @@ using BuisnessLogic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Models;
+using Models.UIModels;
 using System;
 
 namespace SurveySite.Components.Pages
@@ -17,7 +18,7 @@ namespace SurveySite.Components.Pages
         public bool Edit = true;
         public bool isOwner = false;
         public Survey Survey { get; set; } = new();
-
+        public SurveyUI Survey1 { get; set; } = new();
 
         [Inject]
         IRepository Repo { get; set; }

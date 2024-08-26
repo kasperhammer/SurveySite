@@ -14,6 +14,7 @@ namespace Models.UIModels
         [Required]
         public int Type { get; set; }
         [Required]
+    
         public string Question { get; set; }
      
         public List<AnwserModuleUI> MultiAnwsers { get; set; }
