@@ -11,7 +11,7 @@ namespace Models.UIModels
     public class AnwserModuleUI
     {
         public int Id { get; set; }
-        [Required]
+        [Required ]
         public string Text { get; set; }
         public bool Selected { get; set; }
         public int? CompSingleId { get; set; }

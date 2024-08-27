@@ -58,3 +58,13 @@
       background-size:0px;
   }
 }
+
+.Create{
+ height:80vh;
+    overflow-y:scroll;
+    width:min-content;
+    width:100vw;
+    display:flex;
+    align-items:safe center;
+    justify-content:center;
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -10,12 +11,12 @@ namespace Models.UIModels
     public class SurveyUI : IValidatableObject
     {
         public int Id { get; set; }
-        [Required(ErrorMessage ="Du skal angive et navn")]
+        [Required]
         public string Name { get; set; }
-        [Required(ErrorMessage = "Du skal tilføje et spørgsmål")]
-        [MinLength(1, ErrorMessage = "Du skal tilføje et spørgsmål")]
-        public List<CompUI> Comps { get; set; }
-        [Required(ErrorMessage ="Du skal angive en kode")]
+        [Required]
+        [MinLength(1, ErrorMessage = "You need to add at least one Question")]
+        public ObservableCollection<CompUI> Comps { get; set; }
+        [Required]
         public string OwnerCode { get; set; } = string.Empty;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

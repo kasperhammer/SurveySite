@@ -1,15 +1,16 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@using Microsoft.AspNetCore.Components.Forms;
 
-    <EditForm Model="Survey" OnValidSubmit="Submit" OnInvalidSubmit="Invalid">
+
+    <EditForm EditContext="formContext" OnValidSubmit="Submit" OnInvalidSubmit="Invalid">
         <div class="survey">
             <DataAnnotationsValidator />
             <div class="form-group">
-                <label for="exampleFormControlInput1">Spørgeskema navn</label>
-                <InputText placeholder="testskema" class="form-control Name" @bind-Value="Survey.Name" />
+                <label for="exampleFormControlInput1">Survey Name</label>
+                <InputText placeholder="SurveyName" class="form-control Name" @bind-Value="Survey.Name" />
                 <ValidationMessage For="() => Survey.Name" />
             </div>
             <div class="form-group">
-                <label for="exampleFormControlInput1">Ejerkode</label>
+                <label for="exampleFormControlInput1">OwnerPassword</label>
                 <InputText type="password" placeholder="1234" class="form-control Name" @bind-Value="Survey.OwnerCode" />
                 <ValidationMessage For="() => Survey.OwnerCode" />
             </div>
@@ -19,19 +20,19 @@
                 @foreach (var item in Survey.Comps)
                 {
                     <div class="comp">
-                       
-                        <InputText class="question form-control" placeholder="Spørgsmål" @bind-Value="item.Question" />
-                     
+               
+                        <InputText class="question form-control" placeholder="Question" @bind-Value="item.Question" />
+             
                         <InputSelect class="form-select" @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
-                            <option value="0">Fri Tekst</option>
-                            <option value="1">Flere Svarmuligheder</option>
-                            <option value="2">Et Svar</option>
-                            <option class="Remove" value="3">Fjern Modul</option>
+                            <option value="0">Free Text</option>
+                            <option value="1">Multiple Choise</option>
+                            <option value="2">One Anwser</option>
+                            <option class="Remove" value="3">Remove Module</option>
                         </InputSelect>
                         @*           //Free Text *@
                         @if (item.Type == 0)
                         {
-                            <p class="compbottom form-control">Dit svar</p>
+                            <p class="compbottom form-control">Your Anwser</p>
                         }
 
                         @*     //Multiple Choice *@
@@ -40,7 +41,7 @@
 
                         @if (item.Type == 1)
                         {
-                            <p>Denne kategori lader brugeren vælge flere forskellige svar</p>
+                            <p>This category lets you select multiple anwsers.</p>
 
                             @if (item.MultiAnwsers != null)
                             {
@@ -48,27 +49,30 @@
                                 {
                                     <div class="option">
                                         <div class="col-auto">
-                                            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                          
                                             <div class="input-group mb-2">
                                                 <div class="input-group-prepend">
                                                     <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                                 </div>
-                                                <InputText class="form-control" @bind-Value="x.Text" />
+                                                <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" /> 
+                                               
                                             </div>
                                         </div>
 
 
                                     </div>
+                                <ValidationMessage For="() => x.Text" />
+                           
                                 }
 
                                 <div @onclick="(() => AddQuestions(item.Id))" class="option">
                                     <div class="col-auto">
-                                        <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                  
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                             </div>
-                                            <input class="form-control add" placeholder="Tilføj mulighed" />
+                                            <input class="form-control add" placeholder="Add option" />
                                         </div>
                                     </div>
 
@@ -83,7 +87,7 @@
                         @if (item.Type == 2)
                         {
 
-                            <p>Denne kategori lader kun brugeren vælge <b>et</b> svar</p>
+                            <p>This category only lets you chose <b>ONE</b> anwser</p>
 
                             @if (item.SingleAnwser != null)
                             {
@@ -91,27 +95,26 @@
                                 {
                                     <div class="option">
                                         <div class="col-auto">
-                                            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                      
                                             <div class="input-group mb-2">
                                                 <div class="input-group-prepend">
                                                     <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                                 </div>
-                                                <InputText class="form-control" @bind-Value="x.Text" />
+                                                <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" />
                                             </div>
-                                        </div>
-
-
+                                        </div>                                 
                                     </div>
+                                <ValidationMessage For="() => x.Text" />
                                 }
 
                                 <div @onclick="(() => AddQuestions(item.Id))" class="option">
                                     <div class="col-auto">
-                                        <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                                   
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                             </div>
-                                            <input class="form-control add" placeholder="Tilføj mulighed" />
+                                            <input class="form-control add" placeholder="Add option" />
                                         </div>
                                     </div>
 
@@ -119,13 +122,8 @@
 
                             }
                         }
-                      
-                        
-
-
-
-
                     </div>
+                <ValidationMessage For="() => item.Question" />
           
                 }
             }

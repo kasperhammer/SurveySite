@@ -1,5 +1,4 @@
-﻿::deep .Name  {
-
+﻿::deep .Name {
 }
 
 .survey {
@@ -9,24 +8,33 @@
     min-height: 80vh; /* Ensures the height is at least 80vh */
     height: auto;
     padding: 5%;
+    width: fit-content;
+    overflow: auto;
 }
 
 .comp {
- /*   display: grid;
+    display: grid;
     grid-template-rows: auto auto;
-    grid-template-columns: 50% 50%;*/
+    grid-template-columns: auto auto;
+    width: auto;
+    margin-top: 3vh;
+
 }
 
 
 
-.form-group{
-    margin-bottom:5vh !important;
-
+.form-group {
+    margin-top: 3vh !important;
 }
 
 ::deep .question {
-    width: 50vw;
- 
+    max-width: 100%;
+    min-width: 40vw;
+    z-index:2;
+}
+
+::deep .form-select {
+    width: auto;
 }
 
 
@@ -34,7 +42,7 @@
 ::deep .compbottom {
     grid-column: span 2;
     pointer-events: none;
-    
+    margin-bottom: 0px;
 }
 
 .option {
@@ -46,6 +54,7 @@
 .rdo {
     pointer-events: none;
 }
+
 .input-group-text {
     height: 100%;
 }
@@ -54,12 +63,12 @@
     pointer-events: none;
 }
 
-.Remove{
-    color:red;
+.Remove {
+    color: red;
 }
 
-.modal{
-    display:block;
+.modal {
+    display: block;
 }
 
 .abs {
@@ -74,7 +83,7 @@
     margin-bottom: 5%;
     border-color: #10c16e;
     outline: none;
-    color:#10c16e;
+    color: #10c16e;
     user-select: none !important;
     outline-width: 0 !important;
     box-shadow: none;
@@ -82,10 +91,10 @@
     -webkit-box-shadow: none;
 }
 
-.addSegment:hover {
-   background-color:#10c16e;
-   color:white;
-}
+    .addSegment:hover {
+        background-color: #10c16e;
+        color: white;
+    }
 
 
 
