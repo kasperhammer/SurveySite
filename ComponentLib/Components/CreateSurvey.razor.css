@@ -53,7 +53,41 @@
 
 .rdo {
     pointer-events: none;
+
 }
+/* Hide the default radio button */
+.rdodel {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-radius: 50%;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+}
+
+    /* Hover effect to change the border color and display the X */
+    .rdodel:hover {
+        border-color: red;
+    }
+
+        /* Create a red "X" on hover using pseudo-elements */
+        .rdodel:hover::before, .rdodel:hover::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 2px;
+            background-color: red;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .rdodel:hover::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+
 
 .input-group-text {
     height: 100%;

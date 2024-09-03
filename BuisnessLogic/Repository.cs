@@ -1,19 +1,24 @@
-﻿using Database;
+﻿using AutoMapper;
+using Database;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.UIModels;
 
 namespace BuisnessLogic
 {
     public class Repository : IRepository
     {
         public Db Database;
-        public Repository()
+        private readonly IMapper _mappingProfile;
+        public Repository(IMapper map)
         {
+            this._mappingProfile = map;
             Database = new();
         }
 
-        public async Task<bool> AddSurvey(Survey survey)
+        public async Task<bool> AddSurvey(SurveyUI surveyUI)
         {
+            Survey survey = _mappingProfile.Map<Survey>(surveyUI);
             if (survey == null || string.IsNullOrEmpty(survey.Name) || survey.SComps == null || !survey.SComps.Any())
             {
                 return false;

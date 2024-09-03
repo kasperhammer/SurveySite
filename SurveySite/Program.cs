@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents(); ;
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IRepository, Repository>();
 var app = builder.Build();
 

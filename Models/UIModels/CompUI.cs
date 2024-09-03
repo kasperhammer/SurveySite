@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Models.UIModels
 {
-    public class CompUI
+    public class CompUI : IValidatableObject
     {
         public int Id { get; set; }
         [Required]
@@ -24,5 +24,24 @@ namespace Models.UIModels
         [Required]
         public int SurveyId { get; set; }
 
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+
+
+            // Check if Type is 1
+            if (Type == 1)
+            {
+                // Validate that MultiAnwsers has at least 2 items
+                if (MultiAnwsers == null || MultiAnwsers.Count < 2)
+                {
+                    yield return new ValidationResult(
+                        "There must be at least 2 answers in MultiAnwsers when Type is 1.",
+                        new[] { nameof(MultiAnwsers) }
+                    );
+                }
+            }
+
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BuisnessLogic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using Models;
 using Models.UIModels;
 using System;
@@ -28,14 +29,19 @@ namespace ComponentLib.Components
         [Inject]
         NavigationManager NavMan { get; set; }
 
+        [Inject]
+        IJSRuntime jsRuntime { get; set; }
+
+        IJSObjectReference module;
+
         protected override async Task OnInitializedAsync()
         {
             formContext = new EditContext(Survey);
-           
-      
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/ComponentLib/Components/CreateSurvey.razor.js");
+        
         }
 
-      
+
 
 
         public async Task AddComp()
@@ -97,7 +103,7 @@ namespace ComponentLib.Components
             {
                 if (comp.Type == 1)
                 {
-                    comp.MultiAnwsers.Add(new AnwserModuleUI { Id = comp.MultiAnwsers.Count + 1, Text = ""});
+                    comp.MultiAnwsers.Add(new AnwserModuleUI { Id = comp.MultiAnwsers.Count + 1, Text = "" });
                 }
 
                 if (comp.Type == 2)
@@ -112,14 +118,38 @@ namespace ComponentLib.Components
             StateHasChanged();
         }
 
-      
+        public async void RemoveQuestion(AnwserModuleUI item, int compId)
+        {
+            CompUI comp = Survey.Comps.FirstOrDefault(x => x.Id == compId);
+            if (comp != null)
+            {
+                if (comp.Type == 1)
+                {
+                    comp.MultiAnwsers.Remove(item);
+                }
+               
+                if (comp.Type == 2)
+                {
+                    comp.SingleAnwser.Remove(item);
+                }
+
+                StateHasChanged();
+                await module.InvokeVoidAsync("resetAllRadioButtons");
+            }
+
+        }
+
 
         public async Task Submit()
         {
-            //await Repo.AddSurvey(Survey);
-            invalid = false;
-            complete = true;
-            StateHasChanged();
+       
+            if (await Repo.AddSurvey(Survey))
+            {
+                
+                invalid = false;
+                complete = true;
+                StateHasChanged(); 
+            }
         }
 
         public async Task Invalid()

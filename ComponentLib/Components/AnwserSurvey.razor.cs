@@ -42,7 +42,7 @@ namespace ComponentLib.Components
             Survey.OwnerCode = "";
             Survey.OriginId = Survey.Id;
             Survey.Id = 0;
-            await Repo.AddSurvey(Survey);
+           // await Repo.AddSurvey(Survey);
 
             complete = true;
             StateHasChanged();
