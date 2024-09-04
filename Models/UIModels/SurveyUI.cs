@@ -11,16 +11,22 @@ namespace Models.UIModels
     public class SurveyUI : IValidatableObject
     {
         public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
-        [Required]
-        [MinLength(1, ErrorMessage = "You need to add at least one Question")]
         public ObservableCollection<CompUI> Comps { get; set; }
-        [Required]
         public string OwnerCode { get; set; } = string.Empty;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (string.IsNullOrEmpty(Name))
+            {
+                yield return new ValidationResult("Name is required", new[] { nameof(Name) });
+            }
+
+            if (string.IsNullOrEmpty(OwnerCode))
+            {
+                yield return new ValidationResult("OwnerCode is required", new[] { nameof(OwnerCode) });
+            }
+
             // Tjekker, om listen 'Comps' er null eller har mindre end 1 element
             // Hvis ja, returnerer den en ValidationResult-fejlmeddelelse
             if (Comps == null || Comps.Count < 1)
@@ -28,26 +34,6 @@ namespace Models.UIModels
                 yield return new ValidationResult("You must add at least one component.", new[] { nameof(Comps) });
             }
 
-            // Itererer gennem hver 'Comp' i 'Comps'-listen
-            foreach (var comp in Comps)
-            {
-                // Opretter en liste til at gemme valideringsresultater for den enkelte 'Comp'
-                var compValidationResults = new List<ValidationResult>();
-
-                // Opretter en ny valideringskontekst for den aktuelle 'Comp'
-                var compContext = new ValidationContext(comp, validationContext, validationContext.Items);
-
-                // Udfører validering af det aktuelle 'Comp'-objekt
-                // Hvis valideringen fejler, gemmes fejlene i 'compValidationResults'-listen
-                Validator.TryValidateObject(comp, compContext, compValidationResults, true);
-
-                // Itererer gennem alle valideringsresultater for den aktuelle 'Comp'
-                foreach (var validationResult in compValidationResults)
-                {
-                    // Returnerer hvert valideringsresultat, der er fundet
-                    yield return validationResult;
-                }
-            }
         }
 
     }

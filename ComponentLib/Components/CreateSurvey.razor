@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms;
 
 
-    <EditForm EditContext="formContext" OnValidSubmit="Submit" OnInvalidSubmit="Invalid">
+<EditForm EditContext="formContext" OnSubmit="Submit">
         <div class="survey">
             <DataAnnotationsValidator />
             <div class="form-group">
@@ -31,7 +31,8 @@
                         </InputSelect>
                         @*           //Free Text *@
                         @if (item.Type == 0)
-                        {
+                    {
+                            <ValidationMessage For="() => item.Question" />
                             <p class="compbottom form-control">Your Anwser</p>
                         }
 
@@ -41,7 +42,9 @@
                  
                         @if (item.Type == 1)
                         {
+                         <ValidationMessage For="() => item.Question" />
                             <p>This category lets you select multiple anwsers.</p>
+                   
 
                             @if (item.MultiAnwsers != null)
                             {
@@ -61,8 +64,8 @@
 
 
                                     </div>
-                                <ValidationMessage For="() => x.Text" />
-                                <ValidationMessage For="() => item.MultiAnwsers" />
+                                
+                             
                            
                                 }
 
@@ -78,6 +81,7 @@
                                     </div>
 
                                 </div>
+                            <ValidationMessage For="() => item.MultiAnwsers" />
 
                             }
 
@@ -87,9 +91,9 @@
                         @*    //Single choise *@
                         @if (item.Type == 2)
                         {
-
+                            <ValidationMessage For="() => item.Question" />
                             <p>This category only lets you chose <b>ONE</b> anwser</p>
-
+                      
                             @if (item.SingleAnwser != null)
                             {
                                 @foreach (var x in item.SingleAnwser)
@@ -105,7 +109,7 @@
                                             </div>
                                         </div>                                 
                                     </div>
-                                <ValidationMessage For="() => x.Text" />
+                           
                                 }
 
                                 <div @onclick="(() => AddQuestions(item.Id))" class="option">
@@ -120,11 +124,11 @@
                                     </div>
 
                                 </div>
-
+                       
                             }
                         }
                     </div>
-                <ValidationMessage For="() => item.Question" />
+            
                         
           
                 }
@@ -142,7 +146,7 @@
             
           
             <button type="submit" class="btn btn-success">Submit</button>
-            <ValidationSummary />
+       @*      <ValidationSummary /> *@
         </div>
     </EditForm>
 

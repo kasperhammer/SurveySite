@@ -10,29 +10,25 @@ namespace Models.UIModels
 {
     public class CompUI : IValidatableObject
     {
+   
         public int Id { get; set; }
-        [Required]
         public int Type { get; set; }
-        [Required]
-    
         public string Question { get; set; }
-     
         public List<AnwserModuleUI> MultiAnwsers { get; set; }
         public string TextAnwser { get; set; }
         public List<AnwserModuleUI> SingleAnwser { get; set; }
-
-        [Required]
         public int SurveyId { get; set; }
 
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (string.IsNullOrEmpty(Question))
+            {
+                yield return new ValidationResult("The Question field is required", new[] { nameof(Question) });
+            }
 
-
-            // Check if Type is 1
             if (Type == 1)
             {
-                // Validate that MultiAnwsers has at least 2 items
                 if (MultiAnwsers == null || MultiAnwsers.Count < 2)
                 {
                     yield return new ValidationResult(
@@ -40,8 +36,9 @@ namespace Models.UIModels
                         new[] { nameof(MultiAnwsers) }
                     );
                 }
-            }
 
+                
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BuisnessLogic;
+﻿
+using BuisnessLogic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -38,7 +39,7 @@ namespace ComponentLib.Components
         {
             formContext = new EditContext(Survey);
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/ComponentLib/Components/CreateSurvey.razor.js");
-        
+
         }
 
 
@@ -127,7 +128,7 @@ namespace ComponentLib.Components
                 {
                     comp.MultiAnwsers.Remove(item);
                 }
-               
+
                 if (comp.Type == 2)
                 {
                     comp.SingleAnwser.Remove(item);
@@ -140,71 +141,135 @@ namespace ComponentLib.Components
         }
 
 
+       
+
         public async Task Submit()
         {
-       
-            if (await Repo.AddSurvey(Survey))
-            {
-                
-                invalid = false;
-                complete = true;
-                StateHasChanged(); 
-            }
-        }
+            //clear all validation messages
+            formContext = new EditContext(Survey);
+            //opretter en validation message store til at indeholde alle min error beskeder
+            ValidationMessageStore validationMessageStore = new ValidationMessageStore(formContext);
 
-        public async Task Invalid()
-        {
-
-            // Validate each Comp individually
-            foreach (var comp in Survey.Comps)
+            //laver en Liste til at holde mine error beskeder
+            List<ValidationResult> validationResults = new List<ValidationResult>();
+            //Opretter min validation context (Validation contexten er den som går ud fra de tags man en gang har og validere for en.)
+            ValidationContext validationContext = new ValidationContext(Survey);
+            //validere min model
+            Validator.TryValidateObject(Survey, validationContext, validationResults, true);
+            //jeg gennemgår mine error beskeder og tilføjer dem til min validation message store
+            foreach (var validationResult in validationResults)
             {
-                ValidateComp(comp);
-                if (comp.Type == 1)
-                {
-                    comp.MultiAnwsers.ForEach(x => ValidateAnwser(x));
-                }
-                if (comp.Type == 2)
-                {
-                    comp.SingleAnwser.ForEach(x => ValidateAnwser(x));
-                }
+                var memberName = validationResult.MemberNames.FirstOrDefault();
+                var fieldIdentifier = new FieldIdentifier(Survey, memberName);
+                // Manually add the validation error to the ValidationMessageStore
+                validationMessageStore.Add(fieldIdentifier, validationResult.ErrorMessage);
+
             }
 
-            invalid = true;
+            if (Survey.Comps != null)
+            {
+                //itterer igennem mine comonents
+                foreach (var item in Survey.Comps)
+                {
+                    //laver en Liste til at holde mine error beskeder
+                    validationResults = new List<ValidationResult>();
+                    //Opretter min validation context (Validation contexten er den som går ud fra de tags man en gang har og validere for en.)
+                    validationContext = new ValidationContext(item);
+
+                    //Her prøver jeg at validere min model
+                    bool isCompValid = Validator.TryValidateObject(item, validationContext, validationResults, true);
+
+
+                    //jeg gennemgår mine error beskeder og tilføjer dem til min validation message store
+                    foreach (var validationResult in validationResults)
+                    {
+                        var memberName = validationResult.MemberNames.FirstOrDefault();
+                        var fieldIdentifier = new FieldIdentifier(item, memberName);
+
+
+                        // Manually add the validation error to the ValidationMessageStore
+                        validationMessageStore.Add(fieldIdentifier, validationResult.ErrorMessage);
+
+
+
+                    }
+
+
+                    ValidteAnwserUI(item, validationContext);
+                } 
+            }
+
+            // Notify the form that validation messages have been updated
+            formContext.NotifyValidationStateChanged();
+
+            if (formContext.GetValidationMessages().Count() == 0)
+            {
+
+                if (await Repo.AddSurvey(Survey))
+                {
+
+                    invalid = false;
+                    complete = true;
+
+                }
+            }
+            else
+            {
+                invalid = true;
+            }
+
+
+
+
             StateHasChanged();
         }
+
+
+
+        public void ValidteAnwserUI(CompUI item, ValidationContext validationContext)
+        {
+            //eftersom mine awsersUI ikke har nogle Custom validering men kun tags kan jeg gå rundt om min validation store
+            //og derimod bare notifyfield change på stedet.
+            if (item.MultiAnwsers != null)
+            {
+
+                foreach (var anwser in item.MultiAnwsers)
+                {
+                    var compValidationResults = new List<ValidationResult>();
+                    var compContext = new ValidationContext(anwser, validationContext, validationContext.Items);
+                    Validator.TryValidateObject(anwser, compContext, compValidationResults, true);
+                    foreach (var validationResult in compValidationResults)
+                    {
+                        // Returnerer hvert valideringsresultat, der er fundet
+                        formContext.NotifyFieldChanged(new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault()));
+                    }
+                }
+            }
+            if (item.SingleAnwser != null)
+            {
+                foreach (var anwser in item.SingleAnwser)
+                {
+                    var compValidationResults = new List<ValidationResult>();
+                    var compContext = new ValidationContext(anwser, validationContext, validationContext.Items);
+                    Validator.TryValidateObject(anwser, compContext, compValidationResults, true);
+                    foreach (var validationResult in compValidationResults)
+                    {
+                        // Returnerer hvert valideringsresultat, der er fundet
+                        formContext.NotifyFieldChanged(new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault()));
+                    }
+                }
+
+            }
+        }
+
+
 
         public async Task closemodal()
         {
             NavMan.NavigateTo("/", true);
         }
 
-        private void ValidateComp(CompUI comp)
-        {
-            var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(comp);
-            bool isCompValid = Validator.TryValidateObject(comp, validationContext, validationResults, true);
 
-            // Manually update validation state in EditContext for Comp fields
-            foreach (var validationResult in validationResults)
-            {
-                var fieldIdentifier = new FieldIdentifier(comp, validationResult.MemberNames.FirstOrDefault());
-                formContext.NotifyFieldChanged(fieldIdentifier);
-            }
-        }
-
-        private void ValidateAnwser(AnwserModuleUI anwser)
-        {
-            var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(anwser);
-            bool isCompValid = Validator.TryValidateObject(anwser, validationContext, validationResults, true);
-
-            // Manually update validation state in EditContext for Comp fields
-            foreach (var validationResult in validationResults)
-            {
-                var fieldIdentifier = new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault());
-                formContext.NotifyFieldChanged(fieldIdentifier);
-            }
-        }
 
     }
 }
