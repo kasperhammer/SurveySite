@@ -7,7 +7,7 @@ namespace BuisnessLogic
     {
         Task<bool> AddSurvey(SurveyUI surveyUI);
         Task<List<Survey>> GetAllSurveys();
-        Task<Survey> GetOneSurvey(int id);
+        Task<SurveyUI> GetOneSurvey(int id);
         Task<List<Survey>> GetSurvetAnwsers(int id);
     }
 }

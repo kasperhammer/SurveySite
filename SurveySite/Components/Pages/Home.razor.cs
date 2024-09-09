@@ -17,8 +17,8 @@ namespace SurveySite.Components.Pages
         public bool showSurvey = false;
         public bool Edit = true;
         public bool isOwner = false;
-        public Survey Survey { get; set; } = new();
-        public SurveyUI Survey1 { get; set; } = new();
+        
+        public SurveyUI Survey { get; set; } = new();
 
         [Inject]
         IRepository Repo { get; set; }
@@ -59,7 +59,7 @@ namespace SurveySite.Components.Pages
             showSurvey = true;
         }
 
-        public async Task Owner(Survey survey)
+        public async Task Owner(SurveyUI survey)
         {
             Survey = survey;
             Edit = true;

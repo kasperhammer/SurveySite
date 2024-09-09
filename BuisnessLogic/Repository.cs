@@ -130,7 +130,7 @@ namespace BuisnessLogic
             return surveys;
         }
 
-        public async Task<Survey> GetOneSurvey(int id)
+        public async Task<SurveyUI> GetOneSurvey(int id)
         {
 
             if (id != 0)
@@ -142,7 +142,7 @@ namespace BuisnessLogic
 
                 if (survey != null)
                 {
-                    return survey;
+                    return _mappingProfile.Map<SurveyUI>(survey);
                 }
             }
 
