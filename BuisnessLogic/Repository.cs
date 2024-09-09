@@ -42,7 +42,6 @@ namespace BuisnessLogic
                     SingleAnwser = x.SingleAnwser,
                     Survey = x.Survey,
                     SurveyId = x.SurveyId,
-                    TextAnwser = x.TextAnwser,
                     Type = x.Type
                 });
             }
@@ -58,6 +57,7 @@ namespace BuisnessLogic
                 {
                     if (await CreateModules(comps, compsOld))
                     {
+                        surveyUI.Id = survey.Id;
                         return true;
                     }
                 }
@@ -85,10 +85,6 @@ namespace BuisnessLogic
                 item.SurveyId = surveyId;
                 item.MultiAnwsers = null;
                 item.SingleAnwser = null;
-                if (string.IsNullOrEmpty(item.TextAnwser))
-                {
-                    item.TextAnwser = "";
-                }
 
             }
 
@@ -98,7 +94,7 @@ namespace BuisnessLogic
 
         private async Task<bool> CreateModules(List<SComp> comps, List<SComp> compsOld)
         {
-            List<AnwserModule> modules = new();
+            List<CompModule> modules = new();
             for (int i = 0; i < comps.Count; i++)
             {
                 if (comps[i].Type == 1)
@@ -155,11 +151,8 @@ namespace BuisnessLogic
 
         public async Task<List<Survey>> GetSurvetAnwsers(int id)
         {
-            List<Survey> surveys = await Database.Surveys.Where(X => X.OriginId == id && X.SurveyAnwser == true).Include(x => x.SComps)
-                .ThenInclude(x => x.MultiAnwsers).Include(x => x.SComps).ThenInclude(x => x.SingleAnwser).ToListAsync();
 
-            return surveys;
-
+            return null;
         }
 
 

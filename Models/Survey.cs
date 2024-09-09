@@ -14,8 +14,7 @@ namespace Models
         public string Name { get; set; }
         public List<SComp> SComps { get; set; }
         public string OwnerCode { get; set; } = string.Empty;
-        public bool SurveyAnwser { get; set; }
-        public int OriginId { get; set; }
+        public List<AnwserModule> AnwserModules { get; set;}
         
     }
 }

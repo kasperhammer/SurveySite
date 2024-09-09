@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database.Migrations
 {
     [DbContext(typeof(Db))]
-    [Migration("20240819070402_init")]
+    [Migration("20240909111416_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,7 +25,52 @@ namespace Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Models.Anwser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnwserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AnwserText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnwserId");
+
+                    b.HasIndex("CompId");
+
+                    b.ToTable("Anwsers");
+                });
+
             modelBuilder.Entity("Models.AnwserModule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("SurveyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SurveyId");
+
+                    b.ToTable("AnwserModules");
+                });
+
+            modelBuilder.Entity("Models.CompModule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,9 +83,6 @@ namespace Database.Migrations
 
                     b.Property<int?>("CompSingleId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Selected")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -70,10 +112,6 @@ namespace Database.Migrations
                     b.Property<int>("SurveyId")
                         .HasColumnType("int");
 
-                    b.Property<string>("TextAnwser")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -96,22 +134,46 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OriginId")
-                        .HasColumnType("int");
-
                     b.Property<string>("OwnerCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("SurveyAnwser")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
                     b.ToTable("Surveys");
                 });
 
+            modelBuilder.Entity("Models.Anwser", b =>
+                {
+                    b.HasOne("Models.AnwserModule", "AnwserModule")
+                        .WithMany("anwsers")
+                        .HasForeignKey("AnwserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.SComp", "Comp")
+                        .WithMany()
+                        .HasForeignKey("CompId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("AnwserModule");
+
+                    b.Navigation("Comp");
+                });
+
             modelBuilder.Entity("Models.AnwserModule", b =>
+                {
+                    b.HasOne("Models.Survey", "Survey")
+                        .WithMany("AnwserModules")
+                        .HasForeignKey("SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Survey");
+                });
+
+            modelBuilder.Entity("Models.CompModule", b =>
                 {
                     b.HasOne("Models.SComp", "CompMulti")
                         .WithMany("MultiAnwsers")
@@ -137,6 +199,11 @@ namespace Database.Migrations
                     b.Navigation("Survey");
                 });
 
+            modelBuilder.Entity("Models.AnwserModule", b =>
+                {
+                    b.Navigation("anwsers");
+                });
+
             modelBuilder.Entity("Models.SComp", b =>
                 {
                     b.Navigation("MultiAnwsers");
@@ -146,6 +213,8 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Models.Survey", b =>
                 {
+                    b.Navigation("AnwserModules");
+
                     b.Navigation("SComps");
                 });
 #pragma warning restore 612, 618

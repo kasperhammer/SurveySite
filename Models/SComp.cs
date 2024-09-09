@@ -16,9 +16,8 @@ namespace Models
 
         public string Question { get; set; }
 
-        public List<AnwserModule> MultiAnwsers { get; set; }
-        public string TextAnwser { get; set; }
-        public List <AnwserModule> SingleAnwser { get; set; }
+        public List<CompModule> MultiAnwsers { get; set; }
+        public List <CompModule> SingleAnwser { get; set; }
 
        
         public int SurveyId { get; set; }

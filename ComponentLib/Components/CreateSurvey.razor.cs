@@ -71,21 +71,18 @@ namespace ComponentLib.Components
                 {
                     comp.MultiAnwsers = null;
                     comp.SingleAnwser = null;
-                    comp.TextAnwser = "";
                 }
                 if (comp.Type == 1)
                 {
                     comp.MultiAnwsers = new();
-                    comp.MultiAnwsers.Add(new AnwserModuleUI { Id = 1, Text = "" });
+                    comp.MultiAnwsers.Add(new CompModuleUI { Id = 1, Text = "" });
                     comp.SingleAnwser = null;
-                    comp.TextAnwser = "";
                 }
                 if (comp.Type == 2)
                 {
                     comp.MultiAnwsers = null;
                     comp.SingleAnwser = new();
-                    comp.SingleAnwser.Add(new AnwserModuleUI { Id = 1, Text = "" });
-                    comp.TextAnwser = "";
+                    comp.SingleAnwser.Add(new CompModuleUI { Id = 1, Text = "" });
                 }
                 if (comp.Type == 3)
                 {
@@ -104,12 +101,12 @@ namespace ComponentLib.Components
             {
                 if (comp.Type == 1)
                 {
-                    comp.MultiAnwsers.Add(new AnwserModuleUI { Id = comp.MultiAnwsers.Count + 1, Text = "" });
+                    comp.MultiAnwsers.Add(new CompModuleUI { Id = comp.MultiAnwsers.Count + 1, Text = "" });
                 }
 
                 if (comp.Type == 2)
                 {
-                    comp.SingleAnwser.Add(new AnwserModuleUI { Id = comp.SingleAnwser.Count + 1, Text = "" });
+                    comp.SingleAnwser.Add(new CompModuleUI { Id = comp.SingleAnwser.Count + 1, Text = "" });
                 }
 
 
@@ -119,7 +116,7 @@ namespace ComponentLib.Components
             StateHasChanged();
         }
 
-        public async void RemoveQuestion(AnwserModuleUI item, int compId)
+        public async void RemoveQuestion(CompModuleUI item, int compId)
         {
             CompUI comp = Survey.Comps.FirstOrDefault(x => x.Id == compId);
             if (comp != null)
@@ -226,8 +223,11 @@ namespace ComponentLib.Components
 
 
 
+
         public void ValidteAnwserUI(CompUI item, ValidationContext validationContext)
         {
+            ValidationMessageStore validationMessageStore = new ValidationMessageStore(formContext);
+
             //eftersom mine awsersUI ikke har nogle Custom validering men kun tags kan jeg gå rundt om min validation store
             //og derimod bare notifyfield change på stedet.
             if (item.MultiAnwsers != null)
@@ -241,7 +241,8 @@ namespace ComponentLib.Components
                     foreach (var validationResult in compValidationResults)
                     {
                         // Returnerer hvert valideringsresultat, der er fundet
-                        formContext.NotifyFieldChanged(new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault()));
+                        validationMessageStore.Add(new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault()), validationResult.ErrorMessage);
+
                     }
                 }
             }
@@ -255,11 +256,14 @@ namespace ComponentLib.Components
                     foreach (var validationResult in compValidationResults)
                     {
                         // Returnerer hvert valideringsresultat, der er fundet
-                        formContext.NotifyFieldChanged(new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault()));
+                        validationMessageStore.Add(new FieldIdentifier(anwser, validationResult.MemberNames.FirstOrDefault()), validationResult.ErrorMessage);
                     }
                 }
 
             }
+
+                formContext.NotifyValidationStateChanged();
+
         }
 
 
