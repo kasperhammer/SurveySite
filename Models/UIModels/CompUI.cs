@@ -13,6 +13,7 @@ namespace Models.UIModels
    
         public int Id { get; set; }
         public int Type { get; set; }
+        public bool Required { get; set; }
         public string Question { get; set; }
         public List<CompModuleUI> MultiAnwsers { get; set; }
         public List<CompModuleUI> SingleAnwser { get; set; }

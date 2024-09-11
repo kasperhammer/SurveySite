@@ -13,7 +13,7 @@ namespace Models
         [Key]
         public int Id { get; set; }
         public int Type { get; set; }
-
+        public bool Required { get; set; }
         public string Question { get; set; }
 
         public List<CompModule> MultiAnwsers { get; set; }
