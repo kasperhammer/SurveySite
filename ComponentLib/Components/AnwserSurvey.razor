@@ -2,78 +2,80 @@
 
 <div class="AnwserPage">
     <h2 class="SurveyName">@Survey.Name</h2>
-    @if (Survey.Comps != null)
+    @if (ready)
     {
-        @if (Survey.Comps.Count != 0)
+        @if (Survey.Comps != null)
         {
-            <EditForm Model="Module">
+            @if (Survey.Comps.Count != 0)
+            {
+                <EditForm Model="Module">
 
 
-                @foreach (var item in Survey.Comps)
-                {
-                    <div class="question">
-                        <h4 class="questionHeader">@item.Question</h4>
-                        @if (item.Type == 0)
-                        {
-                            //Free Text
-                            <textarea class="form-control"></textarea>
-
-                        }
-                        @if (item.Type == 1)
-                        {
-                            //multiple choice
-                            if (item.MultiAnwsers != null)
+                    @for (int i = 0; i < Survey.Comps.Count; i++)
+                    {
+                        var index = i; // Create a local variable for each iteration
+                        <div class="question">
+                            <h4 class="questionHeader">@Survey.Comps[index].Question</h4>
+                            @if (Survey.Comps[index].Type == 0)
                             {
-                                if (item.MultiAnwsers.Count != 0)
-                                {
-                                    foreach (var x in item.MultiAnwsers)
-                                    {
-                                        <div class="option">
-                                            <div class="col-auto">
-
-                                                <div class="input-group mb-2">
-                                                    <div class="input-group-prepend">
-                                                        <div class="input-group-text"> <input class="form-check-input " type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
-                                                    </div>
-                                                    <input placeholder="@x.Text" class="form-control" />
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                    }
-                                }
+                                // Free Text
+                                <InputTextArea @bind-Value="Module.anwsers[index].AnwserText" class="form-control"></InputTextArea>
                             }
-                        }
-                        @if (item.Type == 2)
-                        {
-                            //Single Choice
-                            if (item.SingleAnwser != null)
+                            @if (Survey.Comps[index].Type == 1)
                             {
-                                if (item.SingleAnwser.Count != 0)
+                                // multiple choice
+                                if (Survey.Comps[index].MultiAnwsers != null && Survey.Comps[index].MultiAnwsers.Count != 0)
                                 {
-                                    foreach (var x in item.SingleAnwser)
+
+                                    for (int k = 0; k < Survey.Comps[index].MultiAnwsers.Count; k++)
                                     {
+                                        var kIndex = k;
                                         <div class="option">
                                             <div class="col-auto">
-
                                                 <div class="input-group mb-2">
                                                     <div class="input-group-prepend">
-                                                        <div class="input-group-text"> <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                                        <div class="input-group-text">
+                                                            <input @onchange="(() =>selectitem(index,kIndex,true))" class="form-check-input" type="radio">
+                                                        </div>
                                                     </div>
-                                                    <input placeholder="@x.Text" class="form-control" />
-
+                                                    <input placeholder="@Survey.Comps[index].MultiAnwsers[kIndex].Text" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>
                                     }
                                 }
                             }
-                        }
-                    </div>
-                }
-            </EditForm>
+                            @if (Survey.Comps[index].Type == 2)
+                            {
+                                // Single Choice
+                                if (Survey.Comps[index].SingleAnwser != null && Survey.Comps[index].SingleAnwser.Count != 0)
+                                {
+
+
+                                    for (int k = 0; k < Survey.Comps[index].SingleAnwser.Count; k++)
+                                    {
+                                        var kIndex = k;
+                                        <div class="option">
+                                            <div class="col-auto">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <input @onchange="(() =>selectitem(index,kIndex,false))" class="form-check-input" type="radio" name="radio1">
+                                                        </div>
+                                                    </div>
+                                                    <input placeholder="@Survey.Comps[index].SingleAnwser[kIndex].Text" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+                            }
+                        </div>
+                    }
+
+                </EditForm>
+            }
         }
     }
 </div>

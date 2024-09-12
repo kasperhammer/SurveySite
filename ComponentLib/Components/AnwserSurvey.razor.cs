@@ -15,7 +15,7 @@ namespace ComponentLib.Components
 
         public AnwserModuleUI Module { get; set; } = new();
 
-        bool ready;
+        public bool ready { get; set; } = false;
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -31,13 +31,28 @@ namespace ComponentLib.Components
                             Module.anwsers = new();
                             foreach (var item in Survey.Comps)
                             {                           
-                                Module.anwsers.Add(new AnwserUI { CompId = item.SurveyId});
+                                Module.anwsers.Add(new AnwserUI { CompId = item.SurveyId,AnwserText = ""});
                             }
+                            ready = true;
                             StateHasChanged();
                         }
                     }
                 }
             }
+        }
+
+        public void selectitem(int i, int k,bool multi)
+        {
+
+            if (multi == false)
+            {
+                Module.anwsers[i].AnwserText = k.ToString();
+            }
+            else
+            {
+                //MultiMode
+            }
+
         }
     }
 }

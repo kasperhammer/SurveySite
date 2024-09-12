@@ -50,6 +50,7 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    Required = table.Column<bool>(type: "bit", nullable: false),
                     Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SurveyId = table.Column<int>(type: "int", nullable: false)
                 },
