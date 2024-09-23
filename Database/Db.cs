@@ -19,8 +19,8 @@ namespace Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Server=localhost;Database=Survey;Integrated Security=SSPI;TrustServerCertificate=True;").UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            optionsBuilder.UseSqlServer("Server=DESKTOP-J3SBDBO\\SQLEXPRESS;Database=Survey;Integrated Security=SSPI;TrustServerCertificate=True;").UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            optionsBuilder.UseSqlServer("Server=localhost;Database=Survey;Integrated Security=SSPI;TrustServerCertificate=True;").UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            //optionsBuilder.UseSqlServer("Server=DESKTOP-J3SBDBO\\SQLEXPRESS;Database=Survey;Integrated Security=SSPI;TrustServerCertificate=True;").UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         }
 
