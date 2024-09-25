@@ -90,11 +90,9 @@ namespace ComponentLib.Components
        
         public async Task SubmitAsync()
         {
+            formContext = new EditContext(Module);
             ValidationMessageStore validationMessageStore = new ValidationMessageStore(formContext);
 
-           
- 
-       
 
             foreach (var item in Module.anwsers)
             {
@@ -110,7 +108,7 @@ namespace ComponentLib.Components
                     var memberName = validationResult.MemberNames.FirstOrDefault();
                     var fieldIdentifier = new FieldIdentifier(item, memberName);
                     // Manually add the validation error to the ValidationMessageStore
-                    validationMessageStore.Add(fieldIdentifier, validationResult.ErrorMessage);
+                    validationMessageStore.Add(fieldIdentifier, "This field is required");
                     item.Error = true;
 
                 }
