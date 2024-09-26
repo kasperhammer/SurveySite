@@ -2,137 +2,166 @@
 
 
 <EditForm EditContext="formContext" OnSubmit="Submit">
-        <div class="survey">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label for="exampleFormControlInput1">Survey Name</label>
-                <InputText placeholder="SurveyName" class="form-control Name" @bind-Value="Survey.Name" />
-                <ValidationMessage For="() => Survey.Name" />
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlInput1">OwnerPassword</label>
-                <InputText type="password" placeholder="1234" class="form-control Name" @bind-Value="Survey.OwnerCode" />
-                <ValidationMessage For="() => Survey.OwnerCode" />
-            </div>
+    <div class="survey">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="exampleFormControlInput1">Survey Name</label>
+            <InputText placeholder="SurveyName" class="form-control Name" @bind-Value="Survey.Name" />
+            <ValidationMessage For="() => Survey.Name" />
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlInput1">OwnerPassword</label>
+            <InputText type="password" placeholder="1234" class="form-control Name" @bind-Value="Survey.OwnerCode" />
+            <ValidationMessage For="() => Survey.OwnerCode" />
+        </div>
 
-            @if (Survey.Comps != null)
+        @if (Survey.Comps != null)
+        {
+            @foreach (var item in Survey.Comps)
             {
-                @foreach (var item in Survey.Comps)
-                {
-                    <div class="comp">
-               
-                        <InputText class="question form-control" placeholder="Question" @bind-Value="item.Question" />
-             
-                        <InputSelect class="form-select" @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
-                            <option value="0">Free Text</option>
-                            <option value="1">Multiple Choise</option>
-                            <option value="2">One Anwser</option>
-                            <option class="Remove" value="3">Remove Module</option>
-                        </InputSelect>
-                        @*           //Free Text *@
-                        @if (item.Type == 0)
+                <div class="comp">
+
+                    <InputText class="question form-control" placeholder="Question" @bind-Value="item.Question" />
+
+                    <InputSelect class="form-select" @bind-Value="item.Type" @bind-Value:after="(() =>TypeChange(item.Id))">
+                        <option value="0">Free Text</option>
+                        <option value="1">Multiple Choise</option>
+                        <option value="2">One Anwser</option>
+                        <option class="Remove" value="3">Remove Module</option>
+                    </InputSelect>
+                    @*           //Free Text *@
+                    @if (item.Type == 0)
                     {
-                            <ValidationMessage For="() => item.Question" />
-                            <p class="compbottom form-control">Your Anwser</p>
-                        }
-
-                        @*     //Multiple Choice *@
-
-
-                 
-                        @if (item.Type == 1)
-                        {
-                         <ValidationMessage For="() => item.Question" />
-                            <p>This category lets you select multiple anwsers.</p>
-                   
-
-                            @if (item.MultiAnwsers != null)
-                            {
-                                @foreach (var x in item.MultiAnwsers)
-                                {
-                                    <div class="option">
-                                        <div class="col-auto">
-                                          
-                                            <div class="input-group mb-2">
-                                                <div class="input-group-prepend">
-                                                <div class="input-group-text"> <input @onclick="(() => RemoveQuestion(x,item.Id))" class="form-check-input rdodel"  type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
-                                                </div>
-                                                <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" /> 
-                                               
-                                            </div>
-                                        </div>
+                        <ValidationMessage For="() => item.Question" />
+                        <p class="compbottom form-control">Your Anwser</p>
+                        <div class="input-group-text">
+                            <InputCheckbox class="form-check-input" @bind-Value="item.Required" />
+                            <p class="appendtext">Is this required ?</p>
+                        </div>
 
 
+                    }
+
+                    @*     //Multiple Choice *@
+
+
+
+                    @if (item.Type == 1)
+                    {
+                        <ValidationMessage For="() => item.Question" />
+                        <p>This category lets you select multiple anwsers.</p>
+
+                        <div class="option">
+                            <div class="col-auto">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"> <InputCheckbox class="form-check-input" @bind-Value="item.Required" /></div>
                                     </div>
-                                
-                             
-                           
-                                }
+                                    <input readonly class="form-control req" placeholder="Is question required"/>
+                                </div>
+                            </div>
 
-                                <div @onclick="(() => AddQuestions(item.Id))" class="option">
+
+                        </div>
+
+                        @if (item.MultiAnwsers != null)
+                        {
+                            @foreach (var x in item.MultiAnwsers)
+                            {
+                                <div class="option">
                                     <div class="col-auto">
-                                  
+
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
-                                                <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                                <div class="input-group-text"> <input @onclick="(() => RemoveQuestion(x,item.Id))" class="form-check-input rdodel" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                             </div>
-                                            <input class="form-control add" placeholder="Add option" />
+                                            <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" />
+
                                         </div>
                                     </div>
 
+
                                 </div>
+
+
+
+                            }
+
+                            <div @onclick="(() => AddQuestions(item.Id))" class="option">
+                                <div class="col-auto">
+
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                        </div>
+                                        <input class="form-control add" placeholder="Add option" />
+                                    </div>
+                                </div>
+
+                            </div>
                             <ValidationMessage For="() => item.MultiAnwsers" />
 
-                            }
-
                         }
 
+                    }
 
-                        @*    //Single choise *@
-                        @if (item.Type == 2)
-                        {
-                            <ValidationMessage For="() => item.Question" />
-                            <p>This category only lets you chose <b>ONE</b> anwser</p>
-                      
-                            @if (item.SingleAnwser != null)
-                            {
-                                @foreach (var x in item.SingleAnwser)
-                                {
-                                    <div class="option">
-                                        <div class="col-auto">
-                                      
-                                            <div class="input-group mb-2">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
-                                                </div>
-                                                <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" />
-                                            </div>
-                                        </div>                                 
+
+                    @*    //Single choise *@
+                    @if (item.Type == 2)
+                    {
+                        <ValidationMessage For="() => item.Question" />
+                        <p>This category only lets you chose <b>ONE</b> anwser</p>
+
+                        <div class="option">
+                            <div class="col-auto">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"> <InputCheckbox class="form-check-input" @bind-Value="item.Required" /></div>
                                     </div>
-                           
-                                }
+                                    <input readonly class="form-control req" placeholder="Is question required" />
+                                </div>
+                            </div>
+                        </div>
 
-                                <div @onclick="(() => AddQuestions(item.Id))" class="option">
+                        @if (item.SingleAnwser != null)
+                        {
+                            @foreach (var x in item.SingleAnwser)
+                            {
+                                <div class="option">
                                     <div class="col-auto">
-                                   
+
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
                                             </div>
-                                            <input class="form-control add" placeholder="Add option" />
+                                            <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" />
                                         </div>
                                     </div>
-
                                 </div>
-                       
+
                             }
+
+                            <div @onclick="(() => AddQuestions(item.Id))" class="option">
+                                <div class="col-auto">
+
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                        </div>
+                                        <input class="form-control add" placeholder="Add option" />
+                                    </div>
+                                </div>
+
+                            </div>
+
                         }
-                    </div>
-            
-                        
-          
-                }
+                    }
+                </div>
+
+
+
             }
+        }
 
         @if (invalid)
         {
@@ -143,12 +172,12 @@
         {
             <button @onclick="AddComp" class="btn btn-outline-primary addSegment" type="button"><i class="fa-solid fa-plus "></i></button>
         }
-            
-          
-            <button type="submit" class="btn btn-success">Submit</button>
-       @*      <ValidationSummary /> *@
-        </div>
-    </EditForm>
+
+
+        <button type="submit" class="btn btn-success">Submit</button>
+        @*      <ValidationSummary /> *@
+    </div>
+</EditForm>
 
 
 
@@ -168,7 +197,7 @@
                 </div>
                 <div class="modal-footer">
                     <button @onclick="closemodal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    
+
                 </div>
             </div>
         </div>
