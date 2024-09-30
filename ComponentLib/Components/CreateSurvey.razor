@@ -32,13 +32,13 @@
                     @*           //Free Text *@
                     @if (item.Type == 0)
                     {
-                        <ValidationMessage For="() => item.Question" />
+               
                         <p class="compbottom form-control">Your Anwser</p>
                         <div class="input-group-text">
                             <InputCheckbox class="form-check-input" @bind-Value="item.Required" />
                             <p class="appendtext">Is this required ?</p>
                         </div>
-
+                        <ValidationMessage For="() => item.Question" />
 
                     }
 

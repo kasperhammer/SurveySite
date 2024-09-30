@@ -31,6 +31,13 @@ namespace BuisnessLogic
 
             // Mapping between AnwserModule and AnwserModuleUI
             CreateMap<CompModule, CompModuleUI>().ReverseMap();
+
+
+            CreateMap<AnwserModuleUI, AnwserModule>().ForMember(x => x.anwsers, o => o.MapFrom(s => s.anwsers));
+            CreateMap<AnwserModule, AnwserModuleUI>().ForMember(x => x.anwsers, o => o.MapFrom(s => s.anwsers));
+
+            CreateMap<Anwser, AnwserUI>().ReverseMap();
+
         }
     }
 }

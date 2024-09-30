@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BuisnessLogic;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using Models.UIModels;
@@ -24,6 +25,9 @@ namespace ComponentLib.Components
         IJSRuntime jsRuntime { get; set; }
 
         IJSObjectReference module;
+
+        [Inject]
+        IRepository repo { get; set; }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -42,7 +46,7 @@ namespace ComponentLib.Components
                             Module.anwsers = new();
                             foreach (var item in Survey.Comps)
                             {                           
-                                Module.anwsers.Add(new AnwserUI { CompId = item.SurveyId,AnwserText = ""});
+                                Module.anwsers.Add(new AnwserUI { CompId = item.Id,AnwserText = ""});
                             }
                             ready = true;
                             StateHasChanged();
@@ -93,27 +97,37 @@ namespace ComponentLib.Components
             formContext = new EditContext(Module);
             ValidationMessageStore validationMessageStore = new ValidationMessageStore(formContext);
 
-
-            foreach (var item in Module.anwsers)
+            for (int i = 0; i < Module.anwsers.Count; i++)
             {
-                //laver en Liste til at holde mine error beskeder
-                List<ValidationResult> validationResults = new List<ValidationResult>();
-                //validere min model
-                ValidationContext validationContext = new ValidationContext(item);
-                    Validator.TryValidateObject(item, validationContext, validationResults, true);
-                item.Error = false;
-                //jeg gennemgår mine error beskeder og tilføjer dem til min validation message store
-                foreach (var validationResult in validationResults)
+                if (Survey.Comps[i].Required)
                 {
-                    var memberName = validationResult.MemberNames.FirstOrDefault();
-                    var fieldIdentifier = new FieldIdentifier(item, memberName);
-                    // Manually add the validation error to the ValidationMessageStore
-                    validationMessageStore.Add(fieldIdentifier, "This field is required");
-                    item.Error = true;
 
+                    //laver en Liste til at holde mine error beskeder
+                    List<ValidationResult> validationResults = new List<ValidationResult>();
+                    //validere min model
+                    ValidationContext validationContext = new ValidationContext(Module.anwsers[i]);
+                    Validator.TryValidateObject(Module.anwsers[i], validationContext, validationResults, true);
+                    Module.anwsers[i].Error = false;
+                    //jeg gennemgår mine error beskeder og tilføjer dem til min validation message store
+                    foreach (var validationResult in validationResults)
+                    {
+                        var memberName = validationResult.MemberNames.FirstOrDefault();
+                        var fieldIdentifier = new FieldIdentifier(Module.anwsers[i], memberName);
+                        // Manually add the validation error to the ValidationMessageStore
+                        validationMessageStore.Add(fieldIdentifier, "This field is required");
+                        Module.anwsers[i].Error = true;
+
+                    } 
                 }
             }
             formContext.NotifyValidationStateChanged();
+            if (formContext.GetValidationMessages().Count() == 0)
+            {
+                await repo.SubmitAnwserAsync(Module);
+                //NO errors Found
+
+            }
+        
 
 
         }

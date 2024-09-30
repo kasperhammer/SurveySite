@@ -9,5 +9,6 @@ namespace BuisnessLogic
         Task<List<Survey>> GetAllSurveys();
         Task<SurveyUI> GetOneSurvey(int id);
         Task<List<Survey>> GetSurvetAnwsers(int id);
+        Task<bool> SubmitAnwserAsync(AnwserModuleUI anwser);
     }
 }

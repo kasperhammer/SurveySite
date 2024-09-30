@@ -115,7 +115,8 @@ namespace BuisnessLogic
 
 
             await Database.CompModules.AddRangeAsync(modules);
-            return await Database.SaveChangesAsync() > 0;
+            await Database.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<Survey>> GetAllSurveys()
@@ -155,6 +156,24 @@ namespace BuisnessLogic
             return null;
         }
 
+        public async Task<bool> SubmitAnwserAsync(AnwserModuleUI anwser)
+        {
+            if (anwser != null)
+            {
+                try
+                {
+                    AnwserModule anwserDTO = _mappingProfile.Map<AnwserModule>(anwser);
+                    await Database.AnwserModules.AddAsync(anwserDTO);
+                    return await Database.SaveChangesAsync() > 0;
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+            return false;
+        }
 
 
 

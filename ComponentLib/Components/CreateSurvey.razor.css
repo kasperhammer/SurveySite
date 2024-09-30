@@ -110,6 +110,7 @@
     height: 500vh;
     width: 100vw;
     background-color: #000000a8;
+    z-index:3;
 }
 
 .addSegment {
