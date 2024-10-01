@@ -60,9 +60,29 @@
     padding:1vh;
 }
 
+.modal {
+    display: block;
+}
+
+.abs {
+    position: absolute;
+    height: 500vh;
+    width: 100vw;
+    background-color: #000000a8;
+    z-index: 3;
+}
+
+.TopText{
+    display:flex;
+}
+
+.fa-pen-to-square{
+    cursor:pointer;
+}
 
 @media only screen and (max-width: 600px) {
     .question {
         width: 80vw;
     }
 }
+

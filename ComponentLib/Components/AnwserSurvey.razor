@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 
 <div class="AnwserPage">
-    <h2 class="SurveyName">@Survey.Name</h2>
+    <div class="TopText"><h2 class="SurveyName">@Survey.Name</h2> <i @onclick="() => {edit = true; StateHasChanged();}" class="fa-solid fa-pen-to-square"></i></div>
     @if (ready)
     {
         @if (Survey.Comps != null)
@@ -136,3 +136,47 @@
         }
     }
 </div>
+@if (edit)
+{
+    <div class="abs"></div>
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#10c16e">
+                    <h5 class="modal-title" style=" color:white;">Success</h5>
+                    <button @onclick="closemodal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Thank you. The survey is now complete.</p>
+
+                </div>
+                <div class="modal-footer" style="background-color:#10c16e">
+                    <button @onclick="closemodal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (complete)
+{
+    <div class="abs"></div>
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Success</h5>
+                    <button @onclick="closemodal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Thank you. The survey is now complete.</p> 
+             
+                </div>
+                <div class="modal-footer">
+                    <button @onclick="closemodal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

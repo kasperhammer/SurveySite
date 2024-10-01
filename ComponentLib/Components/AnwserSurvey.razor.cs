@@ -21,6 +21,10 @@ namespace ComponentLib.Components
 
         public bool ready { get; set; } = false;
 
+        public bool complete = false;
+
+        public bool edit;
+
         [Inject]
         IJSRuntime jsRuntime { get; set; }
 
@@ -28,6 +32,10 @@ namespace ComponentLib.Components
 
         [Inject]
         IRepository repo { get; set; }
+
+
+        [Inject]
+        NavigationManager NavMan { get; set; }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -123,14 +131,30 @@ namespace ComponentLib.Components
             formContext.NotifyValidationStateChanged();
             if (formContext.GetValidationMessages().Count() == 0)
             {
-                await repo.SubmitAnwserAsync(Module);
+
                 //NO errors Found
+                if (await repo.SubmitAnwserAsync(Module))
+                {
+                    complete = true;
+                    StateHasChanged();
+
+                }
+             
+
 
             }
         
 
 
         }
+        public async Task closemodal()
+        {
+            NavMan.NavigateTo("/", true);
+        }
 
+        public async Task Edit()
+        {
+
+        }
     }
 }

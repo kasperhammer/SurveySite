@@ -193,7 +193,7 @@
                 </div>
                 <div class="modal-body">
                     <p>Dit spørgeskema er nu blevet oprettet og har følgene link</p> <br />
-                    <p>@Survey.Id</p>
+                    <a @onclick="() => NavMan.NavigateTo('/'+Survey.Id.ToString(),true)" href="">@NavMan.BaseUri@Survey.Id</a>
                 </div>
                 <div class="modal-footer">
                     <button @onclick="closemodal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
