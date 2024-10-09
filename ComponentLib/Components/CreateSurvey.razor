@@ -132,7 +132,8 @@
 
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
-                                                <div class="input-group-text">   <input class="form-check-input rdo" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                                <div class="input-group-text"> <input @onclick="(() => RemoveQuestion(x,item.Id))" class="form-check-input rdodel" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></div>
+                                 
                                             </div>
                                             <InputText placeholder="Option" class="form-control" @bind-Value="x.Text" />
                                         </div>

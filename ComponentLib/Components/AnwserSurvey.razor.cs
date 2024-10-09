@@ -17,6 +17,7 @@ namespace ComponentLib.Components
         [Parameter]
         public SurveyUI Survey { get; set; }
         EditContext formContext;
+    
         public AnwserModuleUI Module { get; set; } = new();
 
         public bool ready { get; set; } = false;
@@ -24,6 +25,9 @@ namespace ComponentLib.Components
         public bool complete = false;
 
         public bool edit;
+
+        private string password = "";
+        EditContext secondContext;
 
         [Inject]
         IJSRuntime jsRuntime { get; set; }
@@ -41,6 +45,7 @@ namespace ComponentLib.Components
             if (firstRender)
             {
                 formContext = new EditContext(Module);
+                secondContext = new EditContext(password);
                 module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/ComponentLib/Components/AnwserSurvey.razor.js");
               
                 if (Survey != null)
@@ -150,6 +155,19 @@ namespace ComponentLib.Components
         public async Task closemodal()
         {
             NavMan.NavigateTo("/", true);
+        }
+
+        public async Task CloseEditModal()
+        {
+            if (edit)
+            {
+                edit = false;
+            }
+            else
+            {
+                edit = true;
+            }
+            StateHasChanged();
         }
 
         public async Task Edit()
