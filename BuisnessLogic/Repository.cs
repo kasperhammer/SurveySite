@@ -150,9 +150,17 @@ namespace BuisnessLogic
             return null;
         }
 
-        public async Task<List<Survey>> GetSurvetAnwsers(int id)
+        public async Task<List<AnwserModuleUI>> GetSurvetAnwsers(int id)
         {
-
+            List<AnwserModule> anwersList = await Database.AnwserModules.Include(x => x.anwsers).Where(x => x.SurveyId == id).ToListAsync();
+            if (anwersList != null)
+            {
+                if (anwersList.Count != 0)
+                {
+              
+                    return _mappingProfile.Map<List<AnwserModuleUI>>(anwersList); 
+                }
+            }
             return null;
         }
 

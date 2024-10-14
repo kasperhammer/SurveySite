@@ -16,6 +16,9 @@ namespace ComponentLib.Components
     {
         [Parameter]
         public SurveyUI Survey { get; set; }
+        [Parameter]
+        public EventCallback<SurveyUI> EditSurvey { get; set; }
+
         EditContext formContext;
     
         public AnwserModuleUI Module { get; set; } = new();
@@ -89,7 +92,7 @@ namespace ComponentLib.Components
                 {
                     // If it is, remove it (deselect)
                     selectedAnswers.Remove(k);
-                    await module.InvokeVoidAsync("CheckBtn", k);
+                    await module.InvokeVoidAsync("CheckBtn",i,k);
                 }
                 else
                 {
@@ -172,7 +175,7 @@ namespace ComponentLib.Components
 
         public async Task Edit()
         {
-
+            await EditSurvey.InvokeAsync(Survey);
         }
     }
 }

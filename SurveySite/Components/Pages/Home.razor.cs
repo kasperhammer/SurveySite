@@ -61,6 +61,7 @@ namespace SurveySite.Components.Pages
 
         public async Task Owner(SurveyUI survey)
         {
+            await Repo.GetSurvetAnwsers(Survey.Id);
             Survey = survey;
             Edit = true;
             showSurvey = true;
@@ -74,6 +75,8 @@ namespace SurveySite.Components.Pages
             totalPages = args.total;
             StateHasChanged();
         }
+
+
 
     }
 }
