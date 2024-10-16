@@ -6,6 +6,7 @@
    align-items:center;
    background-image:url('../Images/Frame1.svg');
    background-size:cover;
+
    justify-content:center;
    overflow:auto;
 }
@@ -22,10 +23,11 @@
 .anwsers{
 
     display:flex;
+
     flex-direction:row;
     margin-top:10vh;
     align-items:center;
-
+  
     text-align:center;
     font-size:large
   
@@ -61,8 +63,9 @@
 }
 
 .Create{
- height:80vh;
-    overflow-y:scroll;
+  
+    min-height:80vh;
+    height:auto;
     width:min-content;
     width:100vw;
     display:flex;
