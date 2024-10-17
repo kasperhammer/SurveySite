@@ -7,7 +7,10 @@
    background-image:url('../Images/Frame1.svg');
    background-size:cover;
 
+  
+
    justify-content:center;
+ 
    overflow:auto;
 }
 
@@ -68,6 +71,7 @@
     height:auto;
     width:min-content;
     width:100vw;
+   
     display:flex;
     align-items:safe center;
     justify-content:center;

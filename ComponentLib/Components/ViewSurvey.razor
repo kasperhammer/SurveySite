@@ -1,0 +1,191 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+
+<div class="AnwserPage">
+    <div class="TopText"><h2 class="SurveyName">@Survey.Name</h2> <i @onclick="CloseEditModal" class="fa-solid fa-pen-to-square"></i></div>
+    @if (ready)
+    {
+        @if (Survey.Comps != null)
+        {
+            @if (Survey.Comps.Count != 0)
+            {
+                <EditForm EditContext="formContext" OnSubmit="SubmitAsync">
+
+                    <DataAnnotationsValidator />
+                    <div class="formdiv">
+
+                        @for (int i = 0; i < Survey.Comps.Count; i++)
+                        {
+                            var index = i; // Create a local variable for each iteration
+
+                            <div class="question">
+                                <h4 class="questionHeader">@Survey.Comps[index].Question</h4>
+                                @if (Survey.Comps[index].Type == 0)
+                                {
+                                    // Free Text
+                                    <InputTextArea placeholder="Write your awnser here" @bind-Value="Module.anwsers[index].AnwserText" class="form-control"></InputTextArea>
+                                    <ValidationMessage For="() => Module.anwsers[index].AnwserText" />
+                                }
+                                @if (Survey.Comps[index].Type == 1)
+                                {
+                                    // multiple choice
+                                    if (Survey.Comps[index].MultiAnwsers != null && Survey.Comps[index].MultiAnwsers.Count != 0)
+                                    {
+                                        @if (Module.anwsers[index].Error)
+                                        {
+                                            <div class="error">
+                                                @for (int k = 0; k < Survey.Comps[index].MultiAnwsers.Count; k++)
+                                                {
+                                                    var kIndex = k;
+                                                    <div class="option">
+                                                        <div class="col-auto">
+                                                            <div class="input-group mb-2">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-text">
+                                                                        @{
+                                                                            string stringId = $"input_{i}_{k}";
+                                                                        }
+                                                                        <input id="@stringId" @onclick="(() =>selectitem(index,kIndex,true))" class="form-check-input" type="radio">
+                                                                    </div>
+                                                                </div>
+                                                                <input placeholder="@Survey.Comps[index].MultiAnwsers[kIndex].Text" class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @for (int k = 0; k < Survey.Comps[index].MultiAnwsers.Count; k++)
+                                            {
+                                                var kIndex = k;
+                                                <div class="option">
+                                                    <div class="col-auto">
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-prepend">
+                                                                <div class="input-group-text">
+                                                                    @{
+                                                                        string stringId = $"input_{i}_{k}";
+                                                                    }
+                                                                    <input id="@stringId" @onclick="(() =>selectitem(index,kIndex,true))" class="form-check-input" type="radio">
+                                                                </div>
+                                                            </div>
+                                                            <input placeholder="@Survey.Comps[index].MultiAnwsers[kIndex].Text" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+
+                                        <ValidationMessage For="() => Module.anwsers[index].AnwserText" />
+                                    }
+                                }
+                                @if (Survey.Comps[index].Type == 2)
+                                {
+                                    // Single Choice
+                                    if (Survey.Comps[index].SingleAnwser != null && Survey.Comps[index].SingleAnwser.Count != 0)
+                                    {
+                                        @if (Module.anwsers[index].Error)
+                                        {
+                                            <div class="error">
+                                                @for (int k = 0; k < Survey.Comps[index].SingleAnwser.Count; k++)
+                                                {
+                                                    var kIndex = k;
+                                                    <div class="option">
+                                                        <div class="col-auto">
+                                                            <div class="input-group mb-2">
+                                                                <div class="input-group-prepend">
+                                                                    <div class="input-group-text">
+                                                                        <input @onchange="(() =>selectitem(index,kIndex,false))" class="form-check-input" type="radio" name="radio1">
+                                                                    </div>
+                                                                </div>
+                                                                <input placeholder="@Survey.Comps[index].SingleAnwser[kIndex].Text" class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @for (int k = 0; k < Survey.Comps[index].SingleAnwser.Count; k++)
+                                            {
+                                                var kIndex = k;
+                                                <div class="option">
+                                                    <div class="col-auto">
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-prepend">
+                                                                <div class="input-group-text">
+                                                                    <input @onchange="(() =>selectitem(index,kIndex,false))" class="form-check-input" type="radio" name="radio1">
+                                                                </div>
+                                                            </div>
+                                                            <input placeholder="@Survey.Comps[index].SingleAnwser[kIndex].Text" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        }
+
+                                        <ValidationMessage For="() => Module.anwsers[index].AnwserText" />
+
+                                    }
+                                }
+                            </div>
+                        }
+
+                        <button type="submit" class="btn submitbtn btn-success">Submit</button>
+                    </div>
+                </EditForm>
+            }
+        }
+    }
+</div>
+@if (edit)
+{
+    <div class="abs"></div>
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#10c16e">
+                    <h5 class="modal-title" style=" color:white;">Success</h5>
+                    <button @onclick="CloseEditModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Get Acces to Anwsers, and Edit the form</p>
+                    <EditForm EditContext="secondContext" OnSubmit="Edit">
+                        <InputText placeholder="Password" @bind-Value="password" class="form-control pswinput" />
+                        <input type="submit" hidden />
+                    </EditForm>
+                </div>
+                <div class="modal-footer" style="background-color:#10c16e">
+                    <button @onclick="CloseEditModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (complete)
+{
+    <div class="abs"></div>
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Success</h5>
+                    <button @onclick="closemodal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Thank you. The survey is now complete.</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button @onclick="closemodal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

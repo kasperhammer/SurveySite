@@ -13,11 +13,41 @@ namespace SurveySite.Components.Pages
         [Parameter]
         public int SurveyId { get; set; }
         public int pageCount = 0;
+
+        public int PageCount
+        {
+            get
+            {
+                return pageCount;
+            }
+            set
+            {
+
+                if (value >= anwsers.Count + 1)
+                {}
+                else
+                {
+                    if (value <= 0)
+                    {
+                        pageCount = 0;
+                    }
+                    else
+                    {
+                        pageCount = value;
+                    }
+
+                }
+
+
+            }
+        }
+
         public int totalPages = 0;
         public bool showSurvey = false;
         public bool Edit = true;
         public bool isOwner = false;
-        
+        public List<AnwserModuleUI> anwsers = new();
+
         public SurveyUI Survey { get; set; } = new();
 
         [Inject]
@@ -47,13 +77,6 @@ namespace SurveySite.Components.Pages
             }
         }
 
-
-
-        
-
-      
-
-      
         public async Task Start()
         {
             showSurvey = true;
@@ -61,18 +84,12 @@ namespace SurveySite.Components.Pages
 
         public async Task Owner(SurveyUI survey)
         {
-            await Repo.GetSurvetAnwsers(Survey.Id);
+            anwsers = await Repo.GetSurvetAnwsers(Survey.Id);
+            totalPages = anwsers.Count;
             Survey = survey;
             Edit = true;
             showSurvey = true;
             isOwner = true;
-            StateHasChanged() ;
-        }
-
-        public async Task PageCount((int page, int total) args)
-        {
-            pageCount = args.page;
-            totalPages = args.total;
             StateHasChanged();
         }
 
