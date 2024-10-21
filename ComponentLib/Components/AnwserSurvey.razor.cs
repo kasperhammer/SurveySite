@@ -43,6 +43,8 @@ namespace ComponentLib.Components
 
         [Inject]
         NavigationManager NavMan { get; set; }
+
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)

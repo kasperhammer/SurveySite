@@ -27,15 +27,21 @@ namespace SurveySite.Components.Pages
                 {}
                 else
                 {
+                    
                     if (value <= 0)
                     {
                         pageCount = 0;
+              
                     }
                     else
                     {
                         pageCount = value;
-                    }
+                        module = anwsers[pageCount - 1];
 
+                    }
+                
+                    StateHasChanged();
+                
                 }
 
 
@@ -47,7 +53,7 @@ namespace SurveySite.Components.Pages
         public bool Edit = true;
         public bool isOwner = false;
         public List<AnwserModuleUI> anwsers = new();
-
+        public AnwserModuleUI module;
         public SurveyUI Survey { get; set; } = new();
 
         [Inject]
