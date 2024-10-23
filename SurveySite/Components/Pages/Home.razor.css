@@ -59,8 +59,22 @@
     background-color: #10c16e !important;
 }
 
+
+.btn-outline-primary{
+    color:#10c16e;
+    border-color:#10c16e;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active, .btn-outline-primary.active, .open > .dropdown-toggle.btn-outline-primary {
+    color: #fff;
+    background-color: #10c16e;
+    border-color: #10c16e; /*set the color you want here*/
+     outline: none !important;
+   box-shadow: none;
+}
+
 @media only screen and (max-width: 768px) {
-  .page{
+    .page{
       background-size:0px;
   }
 }
