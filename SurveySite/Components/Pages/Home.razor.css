@@ -26,13 +26,13 @@
 .anwsers{
 
     display:flex;
-
     flex-direction:row;
-    margin-top:10vh;
     align-items:center;
-  
-    text-align:center;
-    font-size:large
+    justify-content:center;
+    font-size:large;
+    gap:0.5vw;
+    margin-top:5vh;
+
   
 
 }

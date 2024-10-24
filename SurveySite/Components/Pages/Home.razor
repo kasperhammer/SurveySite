@@ -28,16 +28,26 @@
             {
                 <div class="anwsers">
                     <button class="btn btn-outline-primary" @onclick="(() => PageCount--)"><i class="fa-solid fa-chevron-left"></i></button>
-                    <div>  <p style="align-self:center">@PageCount / @totalPages</p></div>
+                  <p style="margin-bottom:0px;">@PageCount / @totalPages</p>
                   
                     <button class="btn btn-outline-primary" @onclick="(() => PageCount++)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             }
             @if (pageCount == 0)
             {
-                <div class="Create">
-                    <CreateSurvey Survey="Survey" />
-                </div>
+                @if (isOwner)
+                {
+                    <div class="Create">
+                        <CreateSurvey Edit="true" Survey="Survey" />
+                    </div>
+                }
+                else
+                {
+                    <div class="Create">
+                        <CreateSurvey Survey="Survey" />
+                    </div>
+                }
+            
             }
             else
             {

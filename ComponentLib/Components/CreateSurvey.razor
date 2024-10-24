@@ -174,8 +174,15 @@
             <button @onclick="AddComp" class="btn btn-outline-primary addSegment" type="button"><i class="fa-solid fa-plus "></i></button>
         }
 
+        @if (Edit)
+        {
+            <button type="submit" class="btn btn-success">Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-success">Submit</button>
+        }
 
-        <button type="submit" class="btn btn-success">Submit</button>
         @*      <ValidationSummary /> *@
     </div>
 </EditForm>

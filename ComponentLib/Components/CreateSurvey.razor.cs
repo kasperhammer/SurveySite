@@ -20,6 +20,9 @@ namespace ComponentLib.Components
         [Parameter]
         public SurveyUI Survey { get; set; } = new();
 
+        [Parameter]
+        public bool Edit { get; set; }
+
         EditContext formContext;
         public bool complete = false;
         public bool invalid = false;
@@ -201,14 +204,27 @@ namespace ComponentLib.Components
 
             if (formContext.GetValidationMessages().Count() == 0)
             {
-
-                if (await Repo.AddSurvey(Survey))
+                if (Edit)
                 {
+                    if (await Repo.UpdateSurveyAsync(Survey))
+                    {
 
-                    invalid = false;
-                    complete = true;
+                        invalid = false;
+                        complete = true;
 
+                    }
                 }
+                else
+                {
+                    if (await Repo.AddSurvey(Survey))
+                    {
+
+                        invalid = false;
+                        complete = true;
+
+                    }
+                }
+               
             }
             else
             {

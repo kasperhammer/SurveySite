@@ -119,6 +119,147 @@ namespace BuisnessLogic
             return true;
         }
 
+        public async Task<bool> UpdateSurveyAsync(SurveyUI surveyUI)
+        {
+            if (surveyUI == null)
+                return false;
+
+            // Map incoming survey to the Survey entity
+            Survey updatedSurvey = _mappingProfile.Map<Survey>(surveyUI);
+
+            // Fetch the existing survey from the database with components and their modules (MultiAnwsers and SingleAnwser)
+            Survey existingSurvey = await Database.Surveys
+                .Include(x => x.SComps)
+                    .ThenInclude(r => r.MultiAnwsers)
+                .Include(x => x.SComps)
+                    .ThenInclude(r => r.SingleAnwser)
+                .FirstOrDefaultAsync(x => x.Id == updatedSurvey.Id);
+
+            if (existingSurvey == null)
+                return false;
+
+            // Update the survey details (not including the components)
+            Database.Entry(existingSurvey).CurrentValues.SetValues(updatedSurvey);
+
+            // Handle components - Add new, update existing, delete removed
+            var existingComponents = existingSurvey.SComps.ToList();
+            var updatedComponents = updatedSurvey.SComps.ToList();
+
+            // Identify components to add, update, or delete
+            var newComponents = updatedComponents.Where(uc => !existingComponents.Any(ec => ec.Id == uc.Id)).ToList();
+            var updatedComponentsToUpdate = updatedComponents.Where(uc => existingComponents.Any(ec => ec.Id == uc.Id)).ToList();
+            var removedComponents = existingComponents.Where(ec => !updatedComponents.Any(uc => uc.Id == ec.Id)).ToList();
+
+            // Add new components
+            foreach (var newComp in newComponents)
+            {
+                newComp.SurveyId = existingSurvey.Id;
+                newComp.Id = 0; // Ensure new components have no ID set
+                Database.Components.Add(newComp);
+            }
+
+            // Update existing components and their modules
+            foreach (var updatedComp in updatedComponentsToUpdate)
+            {
+                var existingComp = existingComponents.First(ec => ec.Id == updatedComp.Id);
+                Database.Entry(existingComp).CurrentValues.SetValues(updatedComp);
+
+                // Update MultiAnwsers and SingleAnwser for each component
+                UpdateCompModules(existingComp, updatedComp);
+            }
+
+            // Delete removed components
+            foreach (var removedComp in removedComponents)
+            {
+                Database.Components.Remove(removedComp);
+            }
+
+            // Save all changes
+            try
+            {
+                await Database.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                // Handle exceptions (e.g., logging)
+                return false;
+            }
+        }
+
+        private void UpdateCompModules(SComp existingComp, SComp updatedComp)
+        {
+            // MultiAnwsers update logic
+            if (updatedComp.MultiAnwsers != null && updatedComp.Type == 1)
+            {
+                // Add new MultiAnwsers
+                var newMultiAnswers = updatedComp.MultiAnwsers
+                    .Where(ua => !existingComp.MultiAnwsers.Any(ea => ea.Id == ua.Id))
+                    .ToList();
+
+                foreach (var newMulti in newMultiAnswers)
+                {
+                    newMulti.CompMultiId = existingComp.Id;
+                    newMulti.Id = 0;
+                    existingComp.MultiAnwsers.Add(newMulti);
+                }
+
+                // Update existing MultiAnwsers
+                foreach (var multiToUpdate in updatedComp.MultiAnwsers)
+                {
+                    var existingMulti = existingComp.MultiAnwsers.FirstOrDefault(ea => ea.Id == multiToUpdate.Id);
+                    if (existingMulti != null)
+                    {
+                        Database.Entry(existingMulti).CurrentValues.SetValues(multiToUpdate);
+                    }
+                }
+
+                // Remove deleted MultiAnwsers
+                var removedMulti = existingComp.MultiAnwsers
+                    .Where(ea => !updatedComp.MultiAnwsers.Any(ua => ua.Id == ea.Id))
+                    .ToList();
+
+                foreach (var multi in removedMulti)
+                {
+                    Database.CompModules.Remove(multi);
+                }
+            }
+
+            // SingleAnwser update logic (similar pattern to MultiAnwsers)
+            if (updatedComp.SingleAnwser != null && updatedComp.Type == 2)
+            {
+                var newSingleAnswers = updatedComp.SingleAnwser
+                    .Where(ua => !existingComp.SingleAnwser.Any(ea => ea.Id == ua.Id))
+                    .ToList();
+
+                foreach (var newSingle in newSingleAnswers)
+                {
+                    newSingle.CompSingleId = existingComp.Id;
+                    newSingle.Id = 0;
+                    existingComp.SingleAnwser.Add(newSingle);
+                }
+
+                foreach (var singleToUpdate in updatedComp.SingleAnwser)
+                {
+                    var existingSingle = existingComp.SingleAnwser.FirstOrDefault(ea => ea.Id == singleToUpdate.Id);
+                    if (existingSingle != null)
+                    {
+                        Database.Entry(existingSingle).CurrentValues.SetValues(singleToUpdate);
+                    }
+                }
+
+                var removedSingle = existingComp.SingleAnwser
+                    .Where(ea => !updatedComp.SingleAnwser.Any(ua => ua.Id == ea.Id))
+                    .ToList();
+
+                foreach (var single in removedSingle)
+                {
+                    Database.CompModules.Remove(single);
+                }
+            }
+        }
+
+
         public async Task<List<Survey>> GetAllSurveys()
         {
             List<Survey> surveys = await Database.Surveys
@@ -157,8 +298,8 @@ namespace BuisnessLogic
             {
                 if (anwersList.Count != 0)
                 {
-              
-                    return _mappingProfile.Map<List<AnwserModuleUI>>(anwersList); 
+
+                    return _mappingProfile.Map<List<AnwserModuleUI>>(anwersList);
                 }
             }
             return null;
