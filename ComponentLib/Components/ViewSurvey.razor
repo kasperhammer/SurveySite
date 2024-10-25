@@ -89,19 +89,22 @@
                                                                 List<int> selectedAnswers = string.IsNullOrEmpty(Module.anwsers[index].AnwserText) ? new List<int>() : Module.anwsers[index].AnwserText.Split(',').Select(int.Parse).ToList();
                                                             }
 
-                                                            @if (selectedAnswers.Contains(kIndex))
-                                                            {
-                                                                <input class="form-check-input" checked type="radio">
-                                                            }
-                                                            else
-                                                            {
-                                                                <input disabled  class="form-check-input" type="radio">
-                                                            }
+                                                  
+                                                                @if (selectedAnswers.Contains(kIndex))
+                                                                {
+                                                                    <input class="form-check-input" checked type="radio">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input disabled class="form-check-input" type="radio">
+                                                                }
+
+                                                           
 
 
                                                         </div>
                                                     </div>
-                                                    <input disabled placeholder="@Survey.Comps[index].MultiAnwsers[kIndex].Text" class="form-control" />
+                                                    <input disabled placeholder="@Survey.Comps[index].SingleAnwser[kIndex].Text" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>

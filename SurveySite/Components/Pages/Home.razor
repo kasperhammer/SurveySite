@@ -6,19 +6,13 @@
 <PageTitle>Surveys</PageTitle>
 <div class="page">
     <div class="Header"><h1 class="SurveyText">SurveyCreator</h1></div>
-
     @if (!showSurvey)
     {
         <div class="idea">
-
             <h1>Surveys</h1>
             <p>Click Here to Create your own Survey !</p>
             <button @onclick="Start" class="btn btn-success">Click me to start !</button>
         </div>
-
-
-
-
     }
     else
     {
@@ -28,8 +22,7 @@
             {
                 <div class="anwsers">
                     <button class="btn btn-outline-primary" @onclick="(() => PageCount--)"><i class="fa-solid fa-chevron-left"></i></button>
-                  <p style="margin-bottom:0px;">@PageCount / @totalPages</p>
-                  
+                    <p style="margin-bottom:0px;">@PageCount / @totalPages</p>
                     <button class="btn btn-outline-primary" @onclick="(() => PageCount++)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             }
@@ -47,28 +40,25 @@
                         <CreateSurvey Survey="Survey" />
                     </div>
                 }
-            
             }
             else
             {
+                if (pageCount == 1)
+                {
+                    <Overview Survey="Survey" AnwserModules="anwsers" />
+                }
+                else
+                {
 
-                <ViewSurvey Module="module" Survey="Survey"  />
+                    <ViewSurvey Module="anwsers[pageCount - 2]" Survey="Survey" />
+                }
             }
-
-
-
-
-
-
-    }
+        }
         else
         {
-
-
-             <AnwserSurvey Survey="Survey" EditSurvey="Owner" /> 
+            <AnwserSurvey Survey="Survey" EditSurvey="Owner" />
         }
     }
-
     <div class="Header bottom"></div>
 </div>
 

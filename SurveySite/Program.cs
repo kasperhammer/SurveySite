@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents(); ;
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddBlazorBootstrap();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

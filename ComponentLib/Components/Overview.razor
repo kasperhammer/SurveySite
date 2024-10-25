@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+
+<div class="AnwserPage">
+    <div class="TopText"><h2 class="SurveyName">@Survey.Name</h2></div>
+    @if (ready)
+    {
+        @if (Survey.Comps != null)
+        {
+            @if (Survey.Comps.Count != 0)
+            {
+
+
+
+                <div class="formdiv">
+
+                    @for (int i = 0; i < Survey.Comps.Count; i++)
+                    {
+                        var index = i; // Create a local variable for each iteration
+
+                        <div class="question">
+                            <h4 class="questionHeader">@Survey.Comps[index].Question</h4>
+                            @if (Survey.Comps[index].Type == 0)
+                            {
+                                // Free Text
+                              
+
+                            }
+                            @if (Survey.Comps[index].Type == 1)
+                            {
+                                // multiple choice
+                                if (Survey.Comps[index].MultiAnwsers != null && Survey.Comps[index].MultiAnwsers.Count != 0)
+                                {
+
+                                   
+                                }
+                            }
+                            @if (Survey.Comps[index].Type == 2)
+                            {
+                                // Single Choice
+                                if (Survey.Comps[index].SingleAnwser != null && Survey.Comps[index].SingleAnwser.Count != 0)
+                                {
+                                    <PieChart @ref="pieChart" Width="500" />
+                                   
+                                }
+                            }
+                        </div>
+                    }
+
+
+                </div>
+
+            }
+        }
+    }
+</div>
+

@@ -23,7 +23,7 @@ namespace SurveySite.Components.Pages
             set
             {
 
-                if (value >= anwsers.Count + 1)
+                if (value >= anwsers.Count + 2)
                 {}
                 else
                 {
@@ -36,7 +36,7 @@ namespace SurveySite.Components.Pages
                     else
                     {
                         pageCount = value;
-                        module = anwsers[pageCount - 1];
+                      
 
                     }
                 
@@ -91,7 +91,7 @@ namespace SurveySite.Components.Pages
         public async Task Owner(SurveyUI survey)
         {
             anwsers = await Repo.GetSurvetAnwsers(Survey.Id);
-            totalPages = anwsers.Count;
+            totalPages = anwsers.Count + 1;
             Survey = survey;
             Edit = true;
             showSurvey = true;
@@ -99,6 +99,10 @@ namespace SurveySite.Components.Pages
             StateHasChanged();
         }
 
+        public async Task Test()
+        {
+
+        }
 
 
     }
