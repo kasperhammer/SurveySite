@@ -2,190 +2,153 @@
 using BuisnessLogic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Identity.Client;
 using Microsoft.JSInterop;
+using Models;
 using Models.UIModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ComponentLib.Components
 {
+
+    public class Chart
+    {
+        public PieChart Pie { get; set; }
+        public PieChartOptions PieOptions { get; set; }
+        public ChartData Data { get; set; }
+    }
+
     public partial class Overview
     {
         [Parameter]
         public SurveyUI Survey { get; set; }
 
         [Parameter]
-        public List<AnwserModuleUI> AnwserModules { get; set;}
+        public List<AnwserModuleUI> AnwserModules { get; set; }
 
-        public bool ready { get; set; } = false;
+        public bool ready;
 
-        [Inject]
-        IJSRuntime jsRuntime { get; set; }
-
-        IJSObjectReference module;
-
-        [Inject]
-        IRepository repo { get; set; }
-
-
-        [Inject]
-        NavigationManager NavMan { get; set; }
-
-
-
-        private PieChart pieChart = new();
-        private PieChartOptions pieChartOptions = new();
-        private ChartData chartData = new();
+        private PieChart pieChart = default!;
+        private PieChartOptions pieChartOptions = default!;
+        private ChartData chartData = default!;
         private string[]? backgroundColors;
-
-        private int datasetsCount = 0;
         private int dataLabelsCount = 0;
 
-        private Random random = new();
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/ComponentLib/Components/ViewSurvey.razor.js");
-                ready = true;
-                await pieChart.InitializeAsync(chartData, pieChartOptions);
-                StateHasChanged();
-            }
-        }
+        public List<Chart> pies { get; set; } = new();
 
 
         protected override void OnInitialized()
         {
             backgroundColors = ColorUtility.CategoricalTwelveColors;
-            chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
+            chartData = new ChartData { Labels = new List<string>(), Datasets = new List<IChartDataset> { new PieChartDataset() } };
 
             pieChartOptions = new();
             pieChartOptions.Responsive = true;
             pieChartOptions.Plugins.Title!.Text = "2022 - Sales";
             pieChartOptions.Plugins.Title.Display = true;
+            ready = true;
+
+            LoadSurveyData(); // Load actual data from the Survey and AnwserModules
+            StateHasChanged();
         }
 
-       
-
-        private async Task RandomizeAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
-
-            var newDatasets = new List<IChartDataset>();
-
-            foreach (var dataset in chartData.Datasets)
+            if (firstRender)
             {
-                if (dataset is PieChartDataset pieChartDataset
-                    && pieChartDataset is not null
-                    && pieChartDataset.Data is not null)
+                Survey.Comps.ToList().ForEach(x =>
                 {
-                    var count = pieChartDataset.Data.Count;
-
-                    var newData = new List<double?>();
-                    for (var i = 0; i < count; i++)
+                    if (x.Type != 0)
                     {
-                        newData.Add(random.Next(0, 100));
+                        Chart chart = new Chart();
+                        chart.Pie = default!; chart.PieOptions = default!; chart.Data = default!;
+                        backgroundColors = ColorUtility.CategoricalTwelveColors;
+                        chart.Data = new ChartData { Labels = new List<string>(), Datasets = new List<IChartDataset> { new PieChartDataset() } };
+                        chart.PieOptions = new();
+                        pieChartOptions.Responsive = true;
+                        pieChartOptions.Plugins.Title!.Text = x.Question;
+                        pieChartOptions.Plugins.Title.Display = true;
+
+                        if (x.Type == 1)
+                        {
+                            x.MultiAnwsers.ForEach(y =>
+                            {
+                                chart.Data.Labels.Add(y.Text);
+                            });
+                            var dataSet = (PieChartDataset)chart.Data.Datasets.First();
+
+                        }
+                        if (x.Type == 2)
+                        {
+                            x.SingleAnwser.ForEach(y =>
+                            {
+                                chart.Data.Labels.Add(y.Text);
+                                var dataSet = (PieChartDataset)chart.Data.Datasets.First();
+                                dataSet.Data ??= new List<double?>();
+                                //Get Number of Anwsers
+                           
+
+                                //dataSet.Data.Add()
+                            });
+                
+
+                        }
                     }
+                });
 
-                    pieChartDataset.Data = newData;
-                    newDatasets.Add(pieChartDataset);
-                }
+
+                await pieChart.InitializeAsync(chartData, pieChartOptions);
             }
-
-            chartData.Datasets = newDatasets;
-
-            await pieChart.UpdateAsync(chartData, pieChartOptions);
+            await base.OnAfterRenderAsync(firstRender);
         }
-
-        private async Task AddDatasetAsync()
+        private void LoadSurveyData()
         {
-            if (chartData is null || chartData.Datasets is null) return;
-
-            var chartDataset = GetRandomPieChartDataset();
-            chartData = await pieChart.AddDatasetAsync(chartData, chartDataset, pieChartOptions);
-        }
-
-        private async Task AddDataAsync()
-        {
-            if (dataLabelsCount >= 12)
+            if (Survey == null || Survey.Comps == null || !Survey.Comps.Any() || AnwserModules == null)
                 return;
 
-            if (chartData is null || chartData.Datasets is null)
-                return;
-
-            var data = new List<IChartDatasetData>();
-            foreach (var dataset in chartData.Datasets)
+            foreach (var comp in Survey.Comps)
             {
-                if (dataset is PieChartDataset pieChartDataset)
-                    data.Add(new PieChartDatasetData(pieChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
+                var answerCount = CountAnswersForComponent(comp.Id);
+
+                // Update Labels and Data
+                chartData.Labels.Add(comp.Question); // Add question as a label
+                var dataSet = (PieChartDataset)chartData.Datasets.First();
+
+                // Add corresponding answer counts to the dataset
+                dataSet.Data ??= new List<double?>();
+                dataSet.Data.Add(answerCount);
+
+                // Set background color for the chart segment
+                dataSet.BackgroundColor ??= new List<string>();
+                dataSet.BackgroundColor.Add(backgroundColors![dataLabelsCount % backgroundColors.Length]);
+
+                dataLabelsCount++;
             }
-
-            chartData = await pieChart.AddDataAsync(chartData, GetNextDataLabel(), data);
-
-            dataLabelsCount += 1;
         }
 
-        #region Data Preparation
-
-        private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+        private double CountAnswersForComponent(int componentId)
         {
-            var datasets = new List<IChartDataset>();
+            // Count the number of answers for a specific component ID
+            // Assuming that AnwserModules contains lists of Anwser with a CompId to match SComp
+            List<(int, int)> answerCount = new List<(int, int)>();
+            List<AnwserUI> myModules = AnwserModules.SelectMany(am => am.anwsers).Where(answer => answer.CompId == componentId).ToList();
+            answerCount.AddRange(myModules.Where(x => !string.IsNullOrEmpty(x.AnwserText)) .SelectMany(x => x.AnwserText.Split(',')
+            .Select(int.Parse).Select(parsedValue => (x.CompId, parsedValue)))
+);
 
-            for (var index = 0; index < numberOfDatasets; index++)
-            {
-                datasets.Add(GetRandomPieChartDataset());
-            }
 
-            return datasets;
+
+            return AnwserModules
+            .SelectMany(am => am.anwsers)
+                .Count(answer => answer.CompId == componentId);
         }
 
-        private PieChartDataset GetRandomPieChartDataset()
-        {
-            datasetsCount += 1;
-            return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
-        }
 
-        private List<double?> GetRandomData()
-        {
-            var data = new List<double?>();
-            for (var index = 0; index < dataLabelsCount; index++)
-            {
-                data.Add(random.Next(0, 100));
-            }
 
-            return data;
-        }
-
-        private List<string> GetRandomBackgroundColors()
-        {
-            var colors = new List<string>();
-            for (var index = 0; index < dataLabelsCount; index++)
-            {
-                colors.Add(backgroundColors![index]);
-            }
-
-            return colors;
-        }
-
-        private List<string> GetDefaultDataLabels(int numberOfLabels)
-        {
-            var labels = new List<string>();
-            for (var index = 0; index < numberOfLabels; index++)
-            {
-                labels.Add(GetNextDataLabel());
-                dataLabelsCount += 1;
-            }
-
-            return labels;
-        }
-
-        private string GetNextDataLabel() => $"Product {dataLabelsCount + 1}";
-
-        private string GetNextDataBackgrounfColor() => backgroundColors![dataLabelsCount];
-
-        #endregion  Data Preparations
     }
 }
