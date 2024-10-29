@@ -9,6 +9,7 @@ using Models;
 using Models.UIModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -18,9 +19,9 @@ namespace ComponentLib.Components
 
     public class Chart
     {
-        public PieChart Pie { get; set; }
-        public PieChartOptions PieOptions { get; set; }
-        public ChartData Data { get; set; }
+        public PieChart Pie;
+        public PieChartOptions PieOptions;
+        public ChartData Data;
     }
 
     public partial class Overview
@@ -32,28 +33,80 @@ namespace ComponentLib.Components
         public List<AnwserModuleUI> AnwserModules { get; set; }
 
         public bool ready;
-
-        private PieChart pieChart = default!;
-        private PieChartOptions pieChartOptions = default!;
-        private ChartData chartData = default!;
+        
         private string[]? backgroundColors;
         private int dataLabelsCount = 0;
-
         public List<Chart> pies { get; set; } = new();
 
 
         protected override void OnInitialized()
         {
-            backgroundColors = ColorUtility.CategoricalTwelveColors;
-            chartData = new ChartData { Labels = new List<string>(), Datasets = new List<IChartDataset> { new PieChartDataset() } };
+            Survey.Comps.ToList().ForEach(async x =>
+            {
+                if (x.Type != 0)
+                {
+                    Chart chart = new Chart();
+                    chart.Pie = default!; chart.PieOptions = default!; chart.Data = default!;
+                    backgroundColors = ColorUtility.CategoricalTwelveColors;
+                    chart.Data = new ChartData { Labels = new List<string>(), Datasets = new List<IChartDataset> { new PieChartDataset() } };
+                    chart.PieOptions = new();
+                    chart.PieOptions.Responsive = true;
+                    chart.PieOptions.Plugins.Title!.Text = x.Question;
+                    chart.PieOptions.Plugins.Title.Display = true;
 
-            pieChartOptions = new();
-            pieChartOptions.Responsive = true;
-            pieChartOptions.Plugins.Title!.Text = "2022 - Sales";
-            pieChartOptions.Plugins.Title.Display = true;
+                    if (x.Type == 1)
+                    {
+                        dataLabelsCount = 0;
+                        var dataSet = (PieChartDataset)chart.Data.Datasets.First();
+                        x.MultiAnwsers.ForEach(y =>
+                        {
+
+                            chart.Data.Labels.Add(y.Text);
+                           
+                            // Set background color for the chart segment
+                            dataSet.BackgroundColor ??= new List<string>();
+                            dataSet.BackgroundColor.Add(backgroundColors![dataLabelsCount % backgroundColors.Length]);
+
+                            dataLabelsCount++;
+
+                        });
+                    
+                        dataSet.Data ??= new List<double?>();
+                        dataSet.Data.AddRange(Count(x.Id));
+
+
+                    }
+                    if (x.Type == 2)
+                    {
+                        dataLabelsCount = 0;
+                        var dataSet = (PieChartDataset)chart.Data.Datasets.First();
+                        x.SingleAnwser.ForEach(y =>
+                        {
+                            chart.Data.Labels.Add(y.Text);
+                            dataSet.BackgroundColor ??= new List<string>();
+                            dataSet.BackgroundColor.Add(backgroundColors![dataLabelsCount % backgroundColors.Length]);
+
+                            dataLabelsCount++;
+                        });
+                   
+                        dataSet.Data ??= new List<double?>();
+                        dataSet.Data.AddRange(Count(x.Id));
+                        // Set background color for the chart segment
+                     
+
+
+                    }
+
+                    //await chart.Pie.InitializeAsync(chart.Data, chart.PieOptions);
+                    pies.Add(chart);
+                }
+                else
+                {
+                    pies.Add(new Chart { });
+                }
+
+            });
             ready = true;
-
-            LoadSurveyData(); // Load actual data from the Survey and AnwserModules
             StateHasChanged();
         }
 
@@ -61,92 +114,79 @@ namespace ComponentLib.Components
         {
             if (firstRender)
             {
-                Survey.Comps.ToList().ForEach(x =>
+                pies.ForEach(async x =>
                 {
-                    if (x.Type != 0)
+                    if (x.Data != null)
                     {
-                        Chart chart = new Chart();
-                        chart.Pie = default!; chart.PieOptions = default!; chart.Data = default!;
-                        backgroundColors = ColorUtility.CategoricalTwelveColors;
-                        chart.Data = new ChartData { Labels = new List<string>(), Datasets = new List<IChartDataset> { new PieChartDataset() } };
-                        chart.PieOptions = new();
-                        pieChartOptions.Responsive = true;
-                        pieChartOptions.Plugins.Title!.Text = x.Question;
-                        pieChartOptions.Plugins.Title.Display = true;
-
-                        if (x.Type == 1)
-                        {
-                            x.MultiAnwsers.ForEach(y =>
-                            {
-                                chart.Data.Labels.Add(y.Text);
-                            });
-                            var dataSet = (PieChartDataset)chart.Data.Datasets.First();
-
-                        }
-                        if (x.Type == 2)
-                        {
-                            x.SingleAnwser.ForEach(y =>
-                            {
-                                chart.Data.Labels.Add(y.Text);
-                                var dataSet = (PieChartDataset)chart.Data.Datasets.First();
-                                dataSet.Data ??= new List<double?>();
-                                //Get Number of Anwsers
-                           
-
-                                //dataSet.Data.Add()
-                            });
-                
-
-                        }
+                        await x.Pie.InitializeAsync(x.Data, x.PieOptions); 
                     }
                 });
-
-
-                await pieChart.InitializeAsync(chartData, pieChartOptions);
+               // await pieChart.InitializeAsync(chartData, pieChartOptions);
             }
             await base.OnAfterRenderAsync(firstRender);
         }
-        private void LoadSurveyData()
-        {
-            if (Survey == null || Survey.Comps == null || !Survey.Comps.Any() || AnwserModules == null)
-                return;
 
-            foreach (var comp in Survey.Comps)
+
+        private List<double?> Count(int compId)
+        {
+            // Step 1: Collect all valid answers for the given compId
+            var validAnswers = new List<double?>();
+
+            foreach (var answerModule in AnwserModules) // Loop through each answer module
             {
-                var answerCount = CountAnswersForComponent(comp.Id);
+                foreach (var answer in answerModule.anwsers) // Loop through each answer in the module
+                {
+                    // Check if the answer's CompId matches and is not empty
+                    if (answer.CompId == compId && !string.IsNullOrEmpty(answer.AnwserText))
+                    {
+                        // Split the answer text by commas and try to parse each part as a double
+                        var answerParts = answer.AnwserText.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-                // Update Labels and Data
-                chartData.Labels.Add(comp.Question); // Add question as a label
-                var dataSet = (PieChartDataset)chartData.Datasets.First();
-
-                // Add corresponding answer counts to the dataset
-                dataSet.Data ??= new List<double?>();
-                dataSet.Data.Add(answerCount);
-
-                // Set background color for the chart segment
-                dataSet.BackgroundColor ??= new List<string>();
-                dataSet.BackgroundColor.Add(backgroundColors![dataLabelsCount % backgroundColors.Length]);
-
-                dataLabelsCount++;
+                        foreach (var part in answerParts) // Loop through each part
+                        {
+                            // Try to parse the part as a double
+                            if (double.TryParse(part, out var parsedValue))
+                            {
+                                validAnswers.Add(parsedValue); // Add the parsed value to the list
+                            }
+                        }
+                    }
+                }
             }
+
+            // Step 2: Count occurrences of each unique answer
+            var answerOccurrences = new Dictionary<double, int>();
+
+            foreach (var value in validAnswers) // Loop through each valid answer
+            {
+                if (value.HasValue) // Check if the value is not null
+                {
+                    if (answerOccurrences.ContainsKey(value.Value))
+                    {
+                        answerOccurrences[value.Value]++; // Increment count if it exists
+                    }
+                    else
+                    {
+                        answerOccurrences[value.Value] = 1; // Initialize count to 1
+                    }
+                }
+            }
+
+            // Step 3: Create a list of occurrence values
+            var occurrenceValues = new List<double?>();
+
+            foreach (var pair in answerOccurrences) // Loop through the dictionary
+            {
+                occurrenceValues.Add((double?)pair.Value); // Add the count to the occurrence list
+            }
+
+            // Step 4: Return the list of occurrence values
+            return occurrenceValues;
         }
 
-        private double CountAnswersForComponent(int componentId)
-        {
-            // Count the number of answers for a specific component ID
-            // Assuming that AnwserModules contains lists of Anwser with a CompId to match SComp
-            List<(int, int)> answerCount = new List<(int, int)>();
-            List<AnwserUI> myModules = AnwserModules.SelectMany(am => am.anwsers).Where(answer => answer.CompId == componentId).ToList();
-            answerCount.AddRange(myModules.Where(x => !string.IsNullOrEmpty(x.AnwserText)) .SelectMany(x => x.AnwserText.Split(',')
-            .Select(int.Parse).Select(parsedValue => (x.CompId, parsedValue)))
-);
 
 
 
-            return AnwserModules
-            .SelectMany(am => am.anwsers)
-                .Count(answer => answer.CompId == componentId);
-        }
 
 
 

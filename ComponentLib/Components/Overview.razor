@@ -31,7 +31,7 @@
                                 if (Survey.Comps[index].MultiAnwsers != null && Survey.Comps[index].MultiAnwsers.Count != 0)
                                 {
 
-                                   
+                                   <PieChart @ref="pies[index].Pie" Width="500"/>
                                 }
                             }
                             @if (Survey.Comps[index].Type == 2)
@@ -39,7 +39,9 @@
                                 // Single Choice
                                 if (Survey.Comps[index].SingleAnwser != null && Survey.Comps[index].SingleAnwser.Count != 0)
                                 {
-                                    <PieChart @ref="pieChart" Width="500" />
+
+                                    <PieChart @ref="pies[index].Pie" Width="500" />
+                               @*      <PieChart @ref="pieChart" Width="500" /> *@
                                    
                                 }
                             }
