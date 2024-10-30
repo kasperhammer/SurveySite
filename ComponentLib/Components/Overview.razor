@@ -8,9 +8,6 @@
         {
             @if (Survey.Comps.Count != 0)
             {
-
-
-
                 <div class="formdiv">
 
                     @for (int i = 0; i < Survey.Comps.Count; i++)
@@ -41,7 +38,6 @@
                                 {
 
                                     <PieChart @ref="pies[index].Pie" Width="500" />
-                               @*      <PieChart @ref="pieChart" Width="500" /> *@
                                    
                                 }
                             }

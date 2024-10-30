@@ -22,7 +22,14 @@
                             @if (Survey.Comps[index].Type == 0)
                             {
                                 // Free Text
-                                <textarea disabled class="form-control">@Module.anwsers[index].AnwserText</textarea>
+                                if(index+1 <= Module.anwsers.Count)
+                                {
+                                    <textarea disabled class="form-control">@Module.anwsers[index].AnwserText</textarea>
+                                }
+                                else
+                                {
+                                    <textarea disabled class="form-control"></textarea>
+                                }
 
                             }
                             @if (Survey.Comps[index].Type == 1)
