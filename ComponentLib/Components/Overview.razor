@@ -19,6 +19,14 @@
                             @if (Survey.Comps[index].Type == 0)
                             {
                                 // Free Text
+                                if (words.Count != 0)
+                                {
+                                    <p style="color:white">Shortest Anwser length @words.FirstOrDefault(x => x.compId == Survey.Comps[index].Id).min</p>
+                                    <p style="color:white">Average  Anwser length @words.FirstOrDefault(x => x.compId == Survey.Comps[index].Id).average</p>
+                                    <p style="color:white">Longest  Anwser length @words.FirstOrDefault(x => x.compId == Survey.Comps[index].Id).max</p>
+                                }
+                               
+                                
                               
 
                             }

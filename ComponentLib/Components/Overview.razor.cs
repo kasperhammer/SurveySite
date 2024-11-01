@@ -24,6 +24,14 @@ namespace ComponentLib.Components
         public ChartData Data;
     }
 
+    public class Words
+    {
+        public double average;
+        public double max;
+        public double min;
+        public int compId;
+    }
+
     public partial class Overview
     {
         [Parameter]
@@ -32,10 +40,14 @@ namespace ComponentLib.Components
         [Parameter]
         public List<AnwserModuleUI> AnwserModules { get; set; }
 
+
+
         public bool ready;
-        
+
         private string[]? backgroundColors;
         private int dataLabelsCount = 0;
+
+        public List<Words> words { get; set; } = new();
         public List<Chart> pies { get; set; } = new();
 
 
@@ -62,7 +74,7 @@ namespace ComponentLib.Components
                         {
 
                             chart.Data.Labels.Add(y.Text);
-                           
+
                             // Set background color for the chart segment
                             dataSet.BackgroundColor ??= new List<string>();
                             dataSet.BackgroundColor.Add(backgroundColors![dataLabelsCount % backgroundColors.Length]);
@@ -70,7 +82,7 @@ namespace ComponentLib.Components
                             dataLabelsCount++;
 
                         });
-                    
+
                         dataSet.Data ??= new List<double?>();
                         dataSet.Data.AddRange(Count(x.Id));
 
@@ -88,11 +100,11 @@ namespace ComponentLib.Components
 
                             dataLabelsCount++;
                         });
-                   
+
                         dataSet.Data ??= new List<double?>();
                         dataSet.Data.AddRange(Count(x.Id));
                         // Set background color for the chart segment
-                     
+
 
 
                     }
@@ -114,14 +126,37 @@ namespace ComponentLib.Components
         {
             if (firstRender)
             {
+                Survey.Comps.Where(x => x.Type == 0).ToList().ForEach(comp =>
+                {
+                    var answers = AnwserModules.SelectMany(module => module.anwsers).Where(answer => answer.CompId == comp.Id).ToList();
+                    var answerLengths = answers.Select(answer => answer.AnwserText.Length).ToList();
+
+                    if (answerLengths.Count == 0)
+                    { 
+                        answerLengths.Add(0);    
+                    }
+
+                    answerLengths.Sort();
+                    int averageLength = answerLengths.Sum() / answerLengths.Count;
+
+                    words.Add(new Words
+                    {
+                        min = answerLengths.First(),
+                        max = answerLengths.Last(),
+                        average = averageLength,
+                        compId = comp.Id
+                    });
+                });
+                words.Sort();
+                StateHasChanged();
                 pies.ForEach(async x =>
                 {
                     if (x.Data != null)
                     {
-                        await x.Pie.InitializeAsync(x.Data, x.PieOptions); 
+                        await x.Pie.InitializeAsync(x.Data, x.PieOptions);
                     }
                 });
-               // await pieChart.InitializeAsync(chartData, pieChartOptions);
+                // await pieChart.InitializeAsync(chartData, pieChartOptions);
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -172,13 +207,33 @@ namespace ComponentLib.Components
                 }
             }
 
+
             // Step 3: Create a list of occurrence values
             var occurrenceValues = new List<double?>();
+            CompUI comp = Survey.Comps.FirstOrDefault(x => x.Id == compId);
 
-            foreach (var pair in answerOccurrences) // Loop through the dictionary
+            // Determine the target answers list based on comp.Type
+            var targetAnswers = comp.Type == 1 ? comp.MultiAnwsers : comp.SingleAnwser;
+
+            // Populate occurrenceValues based on answerOccurrences
+            for (int i = 0; i < targetAnswers.Count; i++)
             {
-                occurrenceValues.Add((double?)pair.Value); // Add the count to the occurrence list
+                bool found = false;
+                foreach (var item in answerOccurrences)
+                {
+                    if (item.Key == i)
+                    {
+                        occurrenceValues.Add((double?)item.Value); // Add the count to the occurrence list
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    occurrenceValues.Add(0); // Add zero if no match is found in answerOccurrences
+                }
             }
+
 
             // Step 4: Return the list of occurrence values
             return occurrenceValues;
